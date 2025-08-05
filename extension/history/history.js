@@ -5,7 +5,7 @@
  */
 
 // Import Firebase functions
-import { getHistoryFromFirestore, syncHistoryFromFirestore } from '../utils/firebase.js';
+import { getHistoryFromFirestore, syncHistoryFromFirestore, clearAllHistoryFromFirestore } from '../utils/firebase.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const historyContainer = document.getElementById('history-container');
@@ -239,16 +239,38 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Clears all history after user confirmation
      */
-    function clearAllHistory() {
+    async function clearAllHistory() {
         if (confirm('Are you sure you want to clear all question history? This action cannot be undone.')) {
-            chrome.storage.local.set({ history: [] }, () => {
+            try {
+                console.log('History page: Clearing all history...');
+                
+                // Clear from local storage
+                await new Promise(resolve => {
+                    chrome.storage.local.set({ 
+                        history: [],
+                        totalCount: 0,
+                        todayCount: 0,
+                        lastDate: null
+                    }, resolve);
+                });
+                
+                // Clear from Firebase
+                await clearAllHistoryFromFirestore();
+                
+                // Update UI
                 fullHistory = [];
                 filteredHistory = [];
                 populateSubjectFilter();
                 updateStats();
                 renderHistory([]);
-                alert('History cleared successfully!');
-            });
+                
+                console.log('History page: All history cleared successfully!');
+                alert('History cleared successfully from both local storage and cloud!');
+                
+            } catch (error) {
+                console.error('History page: Error clearing history:', error);
+                alert('History cleared from local storage, but there was an error clearing cloud data.');
+            }
         }
     }
 

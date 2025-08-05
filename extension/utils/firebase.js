@@ -218,6 +218,55 @@ export async function syncHistoryFromFirestore() {
 }
 
 /**
+ * Deletes all history entries from Firestore for the current user.
+ * @returns {Promise<void>}
+ */
+export async function clearAllHistoryFromFirestore() {
+    try {
+        if (!currentUserUID || !authToken) {
+            await initializeFirebase();
+        }
+
+        // First, get all documents to find their IDs
+        const url = `${FIRESTORE_URL}/users/${currentUserUID}/history?key=${API_KEY}`;
+        
+        const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (!response.ok) {
+            console.log('Firebase (REST): No documents to delete or error fetching documents');
+            return;
+        }
+        
+        const result = await response.json();
+        if (!result.documents || result.documents.length === 0) {
+            console.log('Firebase (REST): No history documents found to delete');
+            return;
+        }
+        
+        // Delete each document
+        const deletePromises = result.documents.map(doc => {
+            // Extract document ID from the document name
+            const docPath = doc.name;
+            const docId = docPath.split('/').pop();
+            const deleteUrl = `${FIRESTORE_URL}/users/${currentUserUID}/history/${docId}?key=${API_KEY}`;
+            
+            return fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+        });
+        
+        await Promise.all(deletePromises);
+        console.log(`Firebase (REST): Successfully deleted ${result.documents.length} history entries`);
+        
+    } catch (error) {
+        console.error('Firebase (REST): Error clearing history from Firestore:', error);
+    }
+}
+
+/**
  * Gets the current user UID.
  * @returns {string|null} - The current user UID or null if not authenticated
  */
