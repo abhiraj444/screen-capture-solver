@@ -32,14 +32,7 @@ chrome.commands.onCommand.addListener((command) => {
                             chrome.storage.local.set({ history: newHistory });
                         });
 
-                        // Open the full popup after analysis is complete
-                        chrome.windows.create({
-                            url: 'popup/popup.html?mode=full', // Always open in full mode
-                            type: 'popup',
-                            width: 400,
-                            height: 600,
-                            focused: true
-                        });
+                        // Analysis complete, results are stored. User will click extension icon to view.
 
                     } catch (error) {
                         console.error('Error during analysis:', error);
