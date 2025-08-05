@@ -160,7 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     (question.explanation && question.explanation.toLowerCase().includes(searchTerm));
 
                 const matchesSubject = subject === 'all' || (question.subject && question.subject === subject);
-                const matchesDifficulty = difficulty === 'all' || (question.difficulty && question.difficulty === difficulty);
+                const matchesDifficulty = difficulty === 'all' || (
+                    question.difficulty && question.difficulty.toLowerCase() === difficulty.toLowerCase()
+                );
 
                 return matchesSearch && matchesSubject && matchesDifficulty;
             });

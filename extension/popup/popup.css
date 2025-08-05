@@ -115,9 +115,12 @@ body {
     margin-bottom: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     min-height: 120px;
+    flex-direction: column; /* Ensure vertical stacking */
+    align-items: stretch;   /* Stretch cards to container width */
+    justify-content: flex-start;
+    width: 100%;
+    gap: 16px; /* Add spacing between question cards */
     display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .recent-question:empty::before {
@@ -127,6 +130,12 @@ body {
     opacity: 0.6;
     font-size: 13px;
     line-height: 1.5;
+}
+
+/* Optional: Add a max-height and scroll for many questions */
+.recent-question {
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .actions {
@@ -160,9 +169,10 @@ body {
     backdrop-filter: blur(10px);
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 12px;
+    margin-bottom: 16px; /* Add spacing between cards */
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
+    width: 100%; /* Make each card take full width */
 }
 
 .question-card:hover {
