@@ -53,7 +53,7 @@ This document tracks the user stories and implementation checklist for the AI Qu
 *   [x] **User Story:** As a user, I want to easily view detailed explanations without cluttering the interface.
     *   [x] Implement collapsible sections for explanation and detailed reasoning in both popup and history views.
     *   [x] Add an expand/collapse icon/button.
-    *   [ ] Ensure UI/UX is clean, interesting, and minimal.
+    *   [x] Ensure UI/UX is clean, interesting, and minimal.
 *   [x] **User Story:** As a user on macOS, I want an alternative keyboard shortcut for capturing screenshots.
     *   [x] Investigate and implement a suitable alternative to `Alt+S` for macOS.
 *   [x] **Bug:** Settings icon in the extension popup is not working.
