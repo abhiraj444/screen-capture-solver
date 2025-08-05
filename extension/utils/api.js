@@ -98,9 +98,13 @@ QUALITY REQUIREMENTS:
             // Assuming the response contains a 'text' field with the JSON string
             const geminiResponseText = data.candidates[0].content.parts[0].text;
 
+            // Extract JSON from Markdown code block if present
+            const jsonMatch = geminiResponseText.match(/```json\n([\s\S]*?)\n```/);
+            const jsonString = jsonMatch ? jsonMatch[1] : geminiResponseText;
+
             // Attempt to parse the JSON response
             try {
-                return JSON.parse(geminiResponseText);
+                return JSON.parse(jsonString);
             } catch (jsonParseError) {
                 console.error('Failed to parse Gemini response as JSON:', geminiResponseText, jsonParseError);
                 throw new Error('Invalid JSON response from Gemini API.');

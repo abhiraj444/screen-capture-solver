@@ -1,21 +1,200 @@
-Command received: capture- screenshot
-background.js:11
-Extension active status: true
-background.js:14
-Attempting to capture visible tab...
-background.js:16
-Tab captured. Screenshot URL length: 120815
-background.js:22
-► Gemini API error: Object
-api.js:93
-▸ Attempt 1 failed: Error: Gemini API api.js:110 error: 404 - models/gemini-pro-vision is not found for API version vibeta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
-at analyzeScreenshot (api.js:94:23) at async background.js:23:38
-Gemini API error: Object
-▸ Attempt 2 failed: Error: Gemini API
-api.js:93
-api.js:110
-error: 404 - models/gemini-pro-vision is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
-at analyzeScreenshot (api.js:94:23)
-at async background.js:23:38
-► Gemini API error: ▸ Object
-api.js:93
+Command received: capture-screenshot
+background.js:14 Extension active status: true
+background.js:16 Attempting to capture visible tab...
+background.js:22 Tab captured. Screenshot URL length: 156415
+api.js:105 Failed to parse Gemini response as JSON: ```json
+{
+  "questions_found": 3,
+  "confidence_score": 98,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mcq",
+      "original_text": "1. Who invented Java Programming?\na) Guido van Rossum\nb) James Gosling\nc) Dennis Ritchie\nd) Bjarne Stroustrup",
+      "formatted_question": "Who invented Java Programming?\n\na) Guido van Rossum\nb) James Gosling\nc) Dennis Ritchie\nd) Bjarne Stroustrup",
+      "direct_answer": "b",
+      "explanation": "Java was developed by James Gosling at Sun Microsystems (which was later acquired by Oracle). He is often referred to as the 'Father of Java'. The other options are inventors of different programming languages: Guido van Rossum for Python, Dennis Ritchie for C, and Bjarne Stroustrup for C++.",
+      "detailed_reasoning": "James Gosling initiated the Java project in June 1991 at Sun Microsystems. The language was originally called Oak after an oak tree outside Gosling's office, and then later renamed Java. His work laid the foundation for one of the most widely used programming languages today, known for its portability and 'Write Once, Run Anywhere' capability.",
+      "confidence": 100,
+      "difficulty": "easy",
+      "subject": "Java Programming",
+      "keywords": [
+        "Java",
+        "inventor",
+        "creator",
+        "James Gosling"
+      ]
+    },
+    {
+      "id": "q2",
+      "type": "mcq",
+      "original_text": "2. Which statement is true about Java?\na) Java is a sequence-dependent programming language\nb) Java is a code dependent programming language\nc) Java is a platform-dependent programming language\nd) Java is a platform-independent programming language",
+      "formatted_question": "Which statement is true about Java?\n\na) Java is a sequence-dependent programming language\nb) Java is a code dependent programming language\nc) Java is a platform-dependent programming language\nd) Java is a platform-independent programming language",
+      "direct_answer": "d",
+      "explanation": "One of Java's core design principles is 'Write Once, Run Anywhere' (WORA). This means that compiled Java code (bytecode) can run on any platform that has a Java Virtual Machine (JVM), making it platform-independent. This distinguishes it from many other languages that require recompilation for different operating systems or hardware.",
+      "detailed_reasoning": "Java achieves platform independence through the use of Java bytecode and the Java Virtual Machine (JVM). When Java source code is compiled, it is converted into platform-neutral bytecode, not machine-specific native code. This bytecode can then be executed by any JVM, which acts as an interpreter and runtime environment for the bytecode on various operating systems (Windows, macOS, Linux, etc.). This mechanism ensures that Java applications can run without modification on any system equipped with a compatible JVM.",
+      "confidence": 100,
+      "difficulty": "easy",
+      "subject": "Java Programming",
+      "keywords": [
+        "Java",
+        "platform independent",
+        "WORA",
+        "JVM",
+        "bytecode"
+      ]
+    },
+    {
+      "id": "q3",
+      "type": "mcq",
+      "original_text": "3. Which component is used to compile, debug and execute the java programs?\na) IDE\nb) JIT\nc) JDK\nd) JVM",
+      "formatted_question": "Which component is used to compile, debug and execute the Java programs?\n\na) IDE\nb) JIT\nc) JDK\nd) JVM",
+      "direct_answer": "c",
+      "explanation": "The Java Development Kit (JDK) is a software development environment used for developing Java applications and applets. It includes the Java Runtime Environment (JRE), an interpreter/loader (java), a compiler (javac), an archiver (jar), a documentation generator (javadoc), and other tools. It contains everything needed to compile, debug, and execute Java programs.",
+      "detailed_reasoning": "Let's analyze the options:\n-   <b>IDE (Integrated Development Environment):</b> While IDEs (like Eclipse, IntelliJ IDEA) are used to write, compile, debug, and execute Java programs, they are applications that bundle and integrate the underlying JDK tools, not the tools themselves.\n-   <b>JIT (Just-In-Time Compiler):</b> This is a component of the JVM that improves the performance of Java applications by compiling bytecode into native machine code at runtime. It's for execution performance, not compilation/debugging setup.\n-   <b>JDK (Java Development Kit):</b> This is the comprehensive suite that provides all the tools necessary for Java development, including the compiler (javac) for compilation, debugging tools, and the JRE (which contains the JVM) for execution.\n-   <b>JVM (Java Virtual Machine):</b> The JVM is responsible for executing Java bytecode. It's part of the JRE, which is part of the JDK. It only executes; it doesn't compile or provide debugging tools independently.",
+      "confidence": 99,
+      "difficulty": "medium",
+      "subject": "Java Programming",
+      "keywords": [
+        "Java",
+        "JDK",
+        "compile",
+        "debug",
+        "execute",
+        "JVM",
+        "JRE",
+        "IDE",
+        "JIT"
+      ]
+    }
+  ]
+}
+``` SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at analyzeScreenshot (api.js:103:29)
+    at async background.js:23:38
+analyzeScreenshot @ api.js:105Understand this error
+api.js:110 Attempt 1 failed: Error: Invalid JSON response from Gemini API.
+    at analyzeScreenshot (api.js:106:23)
+    at async background.js:23:38
+analyzeScreenshot @ api.js:110Understand this error
+api.js:105 Failed to parse Gemini response as JSON: ```json
+{
+  "questions_found": 3,
+  "confidence_score": 98,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mcq",
+      "original_text": "1. Who invented Java Programming?\na) Guido van Rossum\nb) James Gosling\nc) Dennis Ritchie\nd) Bjarne Stroustrup",
+      "formatted_question": "Who invented Java Programming?",
+      "direct_answer": "b",
+      "explanation": "James Gosling is widely recognized as the inventor of the Java programming language. He developed it at Sun Microsystems in the mid-1990s. The other options are inventors of different prominent programming languages.",
+      "detailed_reasoning": "Java was originally developed by James Gosling at Sun Microsystems (now acquired by Oracle) in 1995. Guido van Rossum is known for Python, Dennis Ritchie for C, and Bjarne Stroustrup for C++.",
+      "confidence": 100,
+      "difficulty": "easy",
+      "subject": "Java Programming",
+      "keywords": ["Java", "inventor", "James Gosling", "history"]
+    },
+    {
+      "id": "q2",
+      "type": "mcq",
+      "original_text": "2. Which statement is true about Java?\na) Java is a a sequence-dependent programming language\nb) Java is a code dependent programming language\nc) Java is a platform-dependent programming language\nd) Java is a platform-independent programming language",
+      "formatted_question": "Which statement is true about Java?",
+      "direct_answer": "d",
+      "explanation": "Java is famously known for its 'Write Once, Run Anywhere' (WORA) principle, meaning compiled Java code (bytecode) can run on any platform that has a Java Virtual Machine (JVM) installed, making it platform-independent.",
+      "detailed_reasoning": "Java achieves platform independence through the use of a Java Virtual Machine (JVM). Source code is compiled into bytecode, which is then executed by the JVM specific to each operating system. This allows the same compiled code to run on various platforms without modification, contrasting with platform-dependent languages where code must be recompiled for each target platform.",
+      "confidence": 100,
+      "difficulty": "easy",
+      "subject": "Java Programming",
+      "keywords": ["Java", "platform independence", "WORA", "JVM"]
+    },
+    {
+      "id": "q3",
+      "type": "mcq",
+      "original_text": "3. Which component is used to compile, debug and execute the java programs?\na) IDE\nb) JIT\nc) JDK\nd) JVM",
+      "formatted_question": "Which component is used to compile, debug and execute the Java programs?",
+      "direct_answer": "c",
+      "explanation": "The Java Development Kit (JDK) is a software development environment used for developing Java applications. It includes the Java Runtime Environment (JRE), Java Virtual Machine (JVM), and various development tools like the Java compiler (javac), debugger (jdb), and executable launcher (java).",
+      "detailed_reasoning": "<ul><li><b>IDE (Integrated Development Environment):</b> While an IDE (like IntelliJ IDEA, Eclipse, NetBeans) provides an environment to compile, debug, and execute, it's a *tool* that utilizes underlying components. It's not the component itself.</li><li><b>JIT (Just-In-Time Compiler):</b> This is part of the JVM and optimizes bytecode during runtime. It does not compile source code or handle debugging/execution of the entire program cycle.</li><li><b>JDK (Java Development Kit):</b> This is the comprehensive kit that contains all the necessary tools and libraries to develop, compile, debug, and run Java applications. It includes the JRE and JVM along with development utilities.</li><li><b>JVM (Java Virtual Machine):</b> The JVM is responsible for executing Java bytecode. It does not compile source code into bytecode or directly handle debugging of the source code.</li></ul>Therefore, JDK is the correct component that encompasses all these functionalities.",
+      "confidence": 95,
+      "difficulty": "medium",
+      "subject": "Java Programming",
+      "keywords": ["Java", "JDK", "compile", "debug", "execute", "JVM", "JRE", "IDE"]
+    }
+  ]
+}
+``` SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at analyzeScreenshot (api.js:103:29)
+    at async background.js:23:38
+analyzeScreenshot @ api.js:105Understand this error
+api.js:110 Attempt 2 failed: Error: Invalid JSON response from Gemini API.
+    at analyzeScreenshot (api.js:106:23)
+    at async background.js:23:38
+analyzeScreenshot @ api.js:110Understand this error
+api.js:105 Failed to parse Gemini response as JSON: ```json
+{
+  "questions_found": 3,
+  "confidence_score": 95,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mcq",
+      "original_text": "1. Who invented Java Programming?\na) Guido van Rossum\nb) James Gosling\nc) Dennis Ritchie\nd) Bjarne Stroustrup",
+      "formatted_question": "Who invented Java Programming?",
+      "direct_answer": "B",
+      "explanation": "Java was developed by James Gosling at Sun Microsystems. It was initially released in 1995 as a core component of Sun's Java platform. The other individuals listed are known for inventing other prominent programming languages.",
+      "detailed_reasoning": "James Gosling is widely recognized as the father of the Java programming language. He initiated the Java project at Sun Microsystems in the early 1990s, leading the team that developed the original language. Guido van Rossum is the creator of Python, Dennis Ritchie is known for creating the C programming language, and Bjarne Stroustrup developed C++.",
+      "confidence": 100,
+      "difficulty": "easy",
+      "subject": "Computer Science (Java)",
+      "keywords": ["Java", "inventor", "James Gosling", "history"]
+    },
+    {
+      "id": "q2",
+      "type": "mcq",
+      "original_text": "2. Which statement is true about Java?\na) Java is a sequence-dependent programming language\nb) Java is a code dependent programming language\nc) Java is a platform-dependent programming language\nd) Java is a platform-independent programming language",
+      "formatted_question": "Which statement is true about Java?",
+      "direct_answer": "D",
+      "explanation": "Java's core principle is 'Write Once, Run Anywhere' (WORA), meaning compiled Java code (bytecode) can run on any device with a Java Virtual Machine (JVM), making it platform-independent. This characteristic differentiates it from many other languages.",
+      "detailed_reasoning": "Java achieves platform independence through its compilation process. Source code is compiled into an intermediate format called bytecode, which is then executed by the Java Virtual Machine (JVM). Since a JVM is available for various operating systems and hardware platforms, the same compiled Java bytecode can run on different systems without modification. This makes Java a highly portable and platform-independent language.",
+      "confidence": 100,
+      "difficulty": "medium",
+      "subject": "Computer Science (Java)",
+      "keywords": ["Java", "platform independence", "WORA", "JVM", "bytecode"]
+    },
+    {
+      "id": "q3",
+      "type": "mcq",
+      "original_text": "3. Which component is used to compile, debug and execute the java programs?\na) IDE\nb) JIT\nc) JDK\nd) JVM",
+      "formatted_question": "Which component is used to compile, debug and execute the Java programs?",
+      "direct_answer": "C",
+      "explanation": "The Java Development Kit (JDK) is a software development environment used for developing Java applications and applets. It includes the Java Runtime Environment (JRE), an interpreter/loader (java), a compiler (javac), an archiver (jar), a documentation generator (javadoc), and other tools.",
+      "detailed_reasoning": "<ul><li><b>JDK (Java Development Kit)</b>: This is the primary component required to develop, compile, debug, and execute Java applications. It includes the JRE (Java Runtime Environment), which contains the JVM, and essential development tools like the `javac` compiler for compilation and the `jdb` debugger.</li><li><b>IDE (Integrated Development Environment)</b>: While an IDE (like Eclipse, IntelliJ IDEA) provides a comprehensive environment to compile, debug, and execute, it's a software application that *uses* the JDK under the hood, not a core Java component itself in the context of the question.</li><li><b>JIT (Just-In-Time Compiler)</b>: The JIT compiler is a component of the JVM that improves the performance of Java applications at runtime by compiling bytecode into native machine code 'just in time' for execution. It does not compile the initial source code or debug.</li><li><b>JVM (Java Virtual Machine)</b>: The JVM is an abstract machine that provides the runtime environment to execute Java bytecode. It can execute Java programs but does not compile or directly debug them.</li></ul>Therefore, the JDK is the most appropriate answer as it provides the complete set of tools for the entire development lifecycle.",
+      "confidence": 90,
+      "difficulty": "medium",
+      "subject": "Computer Science (Java)",
+      "keywords": ["Java", "JDK", "compile", "debug", "execute", "JVM", "JRE"]
+    }
+  ]
+}
+``` SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at analyzeScreenshot (api.js:103:29)
+    at async background.js:23:38
+analyzeScreenshot @ api.js:105Understand this error
+api.js:110 Attempt 3 failed: Error: Invalid JSON response from Gemini API.
+    at analyzeScreenshot (api.js:106:23)
+    at async background.js:23:38
+analyzeScreenshot @ api.js:110Understand this error
+api.js:115 Uncaught (in promise) Error: Failed to analyze screenshot after multiple retries.
+    at analyzeScreenshot (api.js:115:23)
+    at async background.js:23:38
+analyzeScreenshot @ api.js:115Understand this error
