@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.lastScreenshotUrl) {
             screenshotDisplay.src = data.lastScreenshotUrl;
             screenshotDisplay.style.display = 'block';
+        } else {
+            screenshotDisplay.style.display = 'none';
         }
         
         // Update counters
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (changes.lastScreenshotUrl) {
             screenshotDisplay.src = changes.lastScreenshotUrl.newValue;
-            screenshotDisplay.style.display = 'block';
+            screenshotDisplay.style.display = changes.lastScreenshotUrl.newValue ? 'block' : 'none';
         }
         // Update counters when they change
         if (changes.totalCount || changes.todayCount) {

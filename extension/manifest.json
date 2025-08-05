@@ -8,7 +8,8 @@
     "storage",
     "commands",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "scripting"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -20,6 +21,13 @@
         "mac": "Command+Shift+S"
       },
       "description": "Capture a screenshot of the current tab."
+    },
+    "capture-selected-text": {
+      "suggested_key": {
+        "default": "Alt+X",
+        "mac": "Command+Shift+X"
+      },
+      "description": "Capture and analyze selected text on the current tab."
     }
   },
   "background": {
