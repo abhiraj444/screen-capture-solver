@@ -16,7 +16,7 @@ chrome.commands.onCommand.addListener((command) => {
                 chrome.tabs.captureVisibleTab(async (screenshotUrl) => {
                     const analysis = await analyzeScreenshot(screenshotUrl);
                     console.log('Analysis complete:', analysis);
-                    chrome.storage.local.set({ lastAnalysis: analysis });
+                    chrome.storage.local.set({ lastAnalysis: analysis, lastScreenshotUrl: screenshotUrl });
 
                     // Store the analysis in the history
                     chrome.storage.local.get({ history: [] }, (data) => {

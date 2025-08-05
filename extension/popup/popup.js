@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusEl = document.getElementById('status');
     const recentQuestionEl = document.getElementById('recentQuestion');
     const historyBtn = document.getElementById('historyBtn');
+    const screenshotDisplay = document.getElementById('screenshot-display');
 
     // Open the history page when the history button is clicked
     historyBtn.addEventListener('click', () => {
@@ -16,10 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Load the current state from storage
-    chrome.storage.local.get(['extensionActive', 'lastAnalysis'], (data) => {
+    chrome.storage.local.get(['extensionActive', 'lastAnalysis', 'lastScreenshotUrl'], (data) => {
         updateUI(data.extensionActive);
         if (data.lastAnalysis) {
             renderQuestion(data.lastAnalysis);
+        }
+        if (data.lastScreenshotUrl) {
+            screenshotDisplay.src = data.lastScreenshotUrl;
+            screenshotDisplay.style.display = 'block';
         }
     });
 
@@ -27,6 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.onChanged.addListener((changes, namespace) => {
         if (changes.lastAnalysis) {
             renderQuestion(changes.lastAnalysis.newValue);
+        }
+        if (changes.lastScreenshotUrl) {
+            screenshotDisplay.src = changes.lastScreenshotUrl.newValue;
+            screenshotDisplay.style.display = 'block';
         }
     });
 
