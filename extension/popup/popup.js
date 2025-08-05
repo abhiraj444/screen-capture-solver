@@ -9,11 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusEl = document.getElementById('status');
     const recentQuestionEl = document.getElementById('recentQuestion');
     const historyBtn = document.getElementById('historyBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
     const screenshotDisplay = document.getElementById('screenshot-display');
 
     // Open the history page when the history button is clicked
     historyBtn.addEventListener('click', () => {
         chrome.tabs.create({ url: 'history/history.html' });
+    });
+
+    // Open the options page when the settings button is clicked
+    settingsBtn.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage();
     });
 
     // Load the current state from storage
@@ -68,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Renders the question card in the popup.
+     * Renders the question card(s) in the popup.
      * @param {object} analysis - The analysis object from the API.
      */
     function renderQuestion(analysis) {
@@ -77,27 +83,47 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const question = analysis.questions[0];
+        let allQuestionsHtml = '';
+        analysis.questions.forEach((question, index) => {
+            allQuestionsHtml += `
+                <div class="question-card">
+                    <div class="question-header">
+                        <span class="question-number">Q${index + 1}</span>
+                        <span class="confidence-score">${question.confidence}%</span>
+                        <span class="question-type">${question.type}</span>
+                    </div>
+                    <div class="question-content">
+                        ${question.formatted_question}
+                    </div>
+                    <div class="answer-section">
+                        <div class="direct-answer">
+                            <strong>Answer: ${question.direct_answer}</strong>
+                        </div>
+                        <div class="explanation-toggle">
+                            <button class="collapsible">🔍 Show Explanation</button>
+                            <div class="explanation-content">
+                                <p><strong>Explanation:</strong> ${question.explanation}</p>
+                                <p><strong>Detailed Reasoning:</strong> ${question.detailed_reasoning}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        recentQuestionEl.innerHTML = allQuestionsHtml;
 
-        recentQuestionEl.innerHTML = `
-            <div class="question-card">
-                <div class="question-header">
-                    <span class="question-number">Q1</span>
-                    <span class="confidence-score">${question.confidence}%</span>
-                    <span class="question-type">${question.type}</span>
-                </div>
-                <div class="question-content">
-                    ${question.formatted_question}
-                </div>
-                <div class="answer-section">
-                    <div class="direct-answer">
-                        <strong>Answer: ${question.direct_answer}</strong>
-                    </div>
-                    <div class="explanation">
-                        ${question.explanation}
-                    </div>
-                </div>
-            </div>
-        `;
+        // Add event listeners for collapsible sections
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        });
     }
+});
 });

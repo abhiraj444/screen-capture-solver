@@ -61,20 +61,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        historyContainer.innerHTML = history.map((analysis) => {
-            const question = analysis.questions[0];
-            return `
-                <div class="history-item">
-                    <h3>Question</h3>
-                    <p><strong>Question:</strong> ${question.formatted_question}</p>
-                    <p><strong>Answer:</strong> ${question.direct_answer}</p>
-                    <div class="details">
-                        <span>Subject: ${question.subject}</span>
-                        <span>Difficulty: ${question.difficulty}</span>
+        historyContainer.innerHTML = history.map((analysis, analysisIndex) => {
+            let questionsHtml = '';
+            analysis.questions.forEach((question, questionIndex) => {
+                questionsHtml += `
+                    <div class="history-item-question">
+                        <h4>Question ${analysisIndex + 1}.${questionIndex + 1}</h4>
+                        <p><strong>Question:</strong> ${question.formatted_question}</p>
+                        <p><strong>Answer:</strong> ${question.direct_answer}</p>
+                        <div class="details">
+                            <span>Subject: ${question.subject}</span>
+                            <span>Difficulty: ${question.difficulty}</span>
+                        </div>
+                        <div class="explanation-toggle">
+                            <button class="collapsible">🔍 Show Explanation</button>
+                            <div class="explanation-content">
+                                <p><strong>Explanation:</strong> ${question.explanation}</p>
+                                <p><strong>Detailed Reasoning:</strong> ${question.detailed_reasoning}</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            });
+            return `<div class="history-analysis-card">${questionsHtml}</div>`;
         }).join('');
+
+        // Add event listeners for collapsible sections
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        });
     }
 
     /**
@@ -88,15 +111,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const markdownContent = history.map(analysis => {
-            const question = analysis.questions[0];
-            return `
-## Question
+            let analysisMarkdown = '';
+            analysis.questions.forEach((question, index) => {
+                analysisMarkdown += `
+## Question ${index + 1}
 **Question:** ${question.formatted_question}
 **Answer:** ${question.direct_answer}
+**Explanation:** ${question.explanation}
+**Detailed Reasoning:** ${question.detailed_reasoning}
 **Subject:** ${question.subject}
 **Difficulty:** ${question.difficulty}
 ---
-            `;
+                `;
+            });
+            return analysisMarkdown;
         }).join('');
 
         const blob = new Blob([markdownContent], { type: 'text/markdown' });
