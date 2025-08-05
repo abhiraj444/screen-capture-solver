@@ -22,14 +22,14 @@ This document tracks the user stories and implementation checklist for the AI Qu
 *   [x] **User Story:** As a user, I want the extension to automatically detect all questions in the screenshot.
     *   [x] Integrate with the Gemini API in `background.js`.
     *   [x] Send the captured screenshot to the Gemini API for analysis.
-    *   [ ] Handle the API response and extract the identified questions.
+    *   [x] Handle the API response and extract the identified questions.
 *   [x] **User Story:** As a user, I want to see the formatted answers to the questions.
     *   [x] Implement logic to display the questions and answers in `popup.html`.
     *   [x] Support different question types (MCQ, short answer, etc.).
     *   [x] Implement confidence scoring and display it to the user.
-*   [ ] **User Story:** As a user, I want the extension to handle errors gracefully.
-    *   [ ] Implement error handling for API requests.
-    *   [ ] Implement retry logic for failed requests.
+*   [x] **User Story:** As a user, I want the extension to handle errors gracefully.
+    *   [x] Implement error handling for API requests.
+    *   [x] Implement retry logic for failed requests.
 
 ## Phase 3: Storage & History (Week 5-6)
 
