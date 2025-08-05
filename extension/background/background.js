@@ -6,8 +6,6 @@
 
 import { analyzeScreenshot } from '../utils/api.js';
 
-
-
 /**
  * Updates the extension icon based on the provided state.
  * @param {string} state - The desired state: 'active', 'inactive', 'loading'.
@@ -107,10 +105,28 @@ chrome.commands.onCommand.addListener((command) => {
                         console.log('Analysis complete:', analysis);
                         chrome.storage.local.set({ lastAnalysis: analysis, lastScreenshotUrl: screenshotUrl });
 
-                        // Store the analysis in the history
-                        chrome.storage.local.get({ history: [] }, (data) => {
+                        // Store the analysis in the history and update counters
+                        chrome.storage.local.get({ history: [], totalCount: 0, todayCount: 0, lastDate: null }, (data) => {
                             const newHistory = [analysis, ...data.history]; // Only store the analysis object
-                            chrome.storage.local.set({ history: newHistory });
+                            const questionsCount = analysis.questions_found || analysis.questions?.length || 0;
+                            const today = new Date().toDateString();
+                            
+                            let newTodayCount = data.todayCount;
+                            let newTotalCount = data.totalCount + questionsCount;
+                            
+                            // Reset today count if it's a new day
+                            if (data.lastDate !== today) {
+                                newTodayCount = questionsCount;
+                            } else {
+                                newTodayCount += questionsCount;
+                            }
+                            
+                            chrome.storage.local.set({ 
+                                history: newHistory,
+                                totalCount: newTotalCount,
+                                todayCount: newTodayCount,
+                                lastDate: today
+                            });
                         });
 
                         updateIcon('success'); // Set icon to success after successful analysis

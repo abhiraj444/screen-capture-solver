@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Load the current state from storage
-    chrome.storage.local.get(['extensionActive', 'lastAnalysis', 'lastScreenshotUrl'], (data) => {
+    chrome.storage.local.get(['extensionActive', 'lastAnalysis', 'lastScreenshotUrl', 'totalCount', 'todayCount', 'lastDate'], (data) => {
         updateUI(data.extensionActive);
         if (data.lastAnalysis) {
             renderQuestion(data.lastAnalysis);
@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
             screenshotDisplay.src = data.lastScreenshotUrl;
             screenshotDisplay.style.display = 'block';
         }
+        
+        // Update counters
+        updateCounters(data.totalCount || 0, data.todayCount || 0, data.lastDate);
     });
 
     // Listen for changes in storage
@@ -36,6 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (changes.lastScreenshotUrl) {
             screenshotDisplay.src = changes.lastScreenshotUrl.newValue;
             screenshotDisplay.style.display = 'block';
+        }
+        // Update counters when they change
+        if (changes.totalCount || changes.todayCount) {
+            chrome.storage.local.get(['totalCount', 'todayCount', 'lastDate'], (data) => {
+                updateCounters(data.totalCount || 0, data.todayCount || 0, data.lastDate);
+            });
         }
     });
 
@@ -119,5 +128,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+    }
+    
+    /**
+     * Updates the counter display
+     * @param {number} totalCount - Total questions solved
+     * @param {number} todayCount - Questions solved today
+     * @param {string} lastDate - Last date when questions were solved
+     */
+    function updateCounters(totalCount, todayCount, lastDate) {
+        const todayCountEl = document.getElementById('todayCount');
+        const totalCountEl = document.getElementById('totalCount');
+        
+        if (todayCountEl) {
+            // Reset today count if it's a new day
+            const today = new Date().toDateString();
+            if (lastDate && lastDate !== today) {
+                todayCountEl.textContent = '0';
+            } else {
+                todayCountEl.textContent = todayCount.toString();
+            }
+        }
+        
+        if (totalCountEl) {
+            totalCountEl.textContent = totalCount.toString();
+        }
     }
 });
