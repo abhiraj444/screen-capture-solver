@@ -18,17 +18,14 @@ const ICON_LOADING_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAA
  * @returns {Promise<ImageData>} - A promise that resolves with the ImageData object.
  */
 async function createImageData(base64) {
-    const img = await new Promise((resolve, reject) => {
-        const tempImg = new Image();
-        tempImg.onload = () => resolve(tempImg);
-        tempImg.onerror = reject;
-        tempImg.src = base64;
-    });
+    const response = await fetch(base64);
+    const blob = await response.blob();
+    const imageBitmap = await createImageBitmap(blob);
 
-    const canvas = new OffscreenCanvas(img.width, img.height);
+    const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    return ctx.getImageData(0, 0, img.width, img.height);
+    ctx.drawImage(imageBitmap, 0, 0);
+    return ctx.getImageData(0, 0, imageBitmap.width, imageBitmap.height);
 }
 
 /**
