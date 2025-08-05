@@ -6,6 +6,42 @@
 
 import { analyzeScreenshot } from '../utils/api.js';
 
+/**
+ * Updates the extension icon based on the provided state.
+ * @param {string} state - The desired state: 'active', 'inactive', 'loading'.
+ */
+function updateIcon(state) {
+    let iconPath = 'assets/icons/';
+    switch (state) {
+        case 'active':
+            iconPath += 'icon_green.png';
+            break;
+        case 'inactive':
+            iconPath += 'icon_red.png';
+            break;
+        case 'loading':
+            iconPath += 'icon_loading.png';
+            break;
+        default:
+            iconPath += 'icon128.png'; // Default icon
+    }
+    chrome.action.setIcon({ path: iconPath });
+}
+
+// Listen for messages from popup.js to update icon
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'updateIcon') {
+        updateIcon(request.state);
+    }
+});
+
+// Initial icon state on extension load
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.storage.local.get('extensionActive', (data) => {
+        updateIcon(data.extensionActive ? 'active' : 'inactive');
+    });
+});
+
 // Listen for the screenshot command
 chrome.commands.onCommand.addListener((command) => {
     console.log(`Command received: ${command}`);
@@ -13,10 +49,12 @@ chrome.commands.onCommand.addListener((command) => {
         chrome.storage.local.get('extensionActive', async (data) => {
             console.log(`Extension active status: ${data.extensionActive}`);
             if (data.extensionActive) {
+                updateIcon('loading'); // Set icon to loading
                 console.log('Attempting to capture visible tab...');
                 chrome.tabs.captureVisibleTab(async (screenshotUrl) => {
                     if (chrome.runtime.lastError) {
                         console.error('Error capturing tab:', chrome.runtime.lastError.message);
+                        updateIcon('active'); // Revert to active on error
                         return;
                     }
                     console.log('Tab captured. Screenshot URL length:', screenshotUrl ? screenshotUrl.length : 'null');
@@ -32,10 +70,11 @@ chrome.commands.onCommand.addListener((command) => {
                             chrome.storage.local.set({ history: newHistory });
                         });
 
-                        // Analysis complete, results are stored. User will click extension icon to view.
+                        updateIcon('active'); // Set icon to active after successful analysis
 
                     } catch (error) {
                         console.error('Error during analysis:', error);
+                        updateIcon('active'); // Revert to active on error
                         // Optionally show an error message in the console or a notification
                     }
                 });
