@@ -9,8 +9,18 @@
  * @returns {Promise<object>} - A promise that resolves with the analysis from the API.
  */
 export async function analyzeScreenshot(screenshotUrl) {
-    const GEMINI_API_KEY = 'AIzaSyDf4uTbOr91S26-OfZw8_S8460i9FjTsUo'; // Your Gemini API Key
-    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const GEMINI_API_KEY = 'AIzaSyDf4uTbOr91S26-OfZw8_S8460i9FjTsUo';
+
+    // Get model preference from storage
+    const useAdvancedModel = await new Promise(resolve => {
+        chrome.storage.local.get(['useAdvancedModel'], (result) => {
+            resolve(!!result.useAdvancedModel);
+        });
+    });
+
+    const GEMINI_API_URL = useAdvancedModel
+        ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`
+        : `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     const SYSTEM_PROMPT = `
 You are an expert academic assistant that analyzes screenshots to identify and solve questions.
@@ -19,6 +29,14 @@ TASK: Analyze the provided screenshot and:
 1. Identify ALL questions present (even if partially visible)
 2. For each question, provide a complete solution
 3. Return results in the specified JSON format
+
+IMPORTANT FORMATTING INSTRUCTIONS:
+- If any part of the question, options, or answer contains code, ALWAYS format code using HTML <pre><code class="language-xxx">...</code></pre> blocks (not Markdown triple backticks).
+- Do NOT use Markdown code blocks (i.e., do NOT use \`\`\`).
+- Preserve code indentation and syntax highlighting by specifying the correct language in the class attribute (e.g., language-java, language-python).
+- For MCQ questions, include all options as an array in the "options" field, preserving their exact text and order as shown in the screenshot.
+- In the "direct_answer" field for MCQ, specify both the option label (e.g., "A", "B", "C", "D") and the exact option text, formatted as: Answer (option X): exact option text.
+- For other question types, provide concise answers as usual.
 
 QUESTION TYPES TO HANDLE:
 - Multiple Choice Questions (MCQ)
@@ -37,10 +55,11 @@ RESPONSE FORMAT:
       "id": "q1",
       "type": "mcq|short|essay|math|code|diagram",
       "original_text": "Exact question as it appears",
-      "formatted_question": "Exact question and exact options as it appears in the screenshot",
-      "direct_answer": "For MCQ: A/B/C/D along with exact option from the question, if multiple options looks correct then choose multiple option as well but main priority should be to pick one answer only. For others: concise answer",
-      "explanation": "4-5 line clear explanation",
-      "detailed_reasoning": "Step-by-step process",
+      "formatted_question": "Exact question and exact options as it appears in the screenshot, with code always in <pre><code> blocks",
+      "options": ["Option A text", "Option B text", ...], // For MCQ only
+      "direct_answer": "For MCQ: If question is asking to choose multiple option then Answer (option X/Y/Z/W) along with text of the option, otherwise if it looks like single answer then Answer (option X): exact option text. For others: concise answer, with code always in <pre><code> blocks if present.",
+      "explanation": "4-5 line clear explanation, with code always in <pre><code> blocks if present.",
+      "detailed_reasoning": "Step-by-step process, with code always in <pre><code> blocks if present.",
       "confidence": 0-100,
       "difficulty": "easy|medium|hard",
       "subject": "math|physics|chemistry|etc",
@@ -54,6 +73,8 @@ QUALITY REQUIREMENTS:
 - Clear, educational explanations
 - Proper formatting with HTML tags when needed
 - Handle edge cases gracefully
+
+IMPORTANT: For any code, always use HTML <pre><code class="language-xxx">...</code></pre> blocks, never Markdown code blocks.
 `;
 
     // Remove the data URL prefix (e.g., "data:image/png;base64,")

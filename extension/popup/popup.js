@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const recentQuestionEl = document.getElementById('recentQuestion');
     const historyBtn = document.getElementById('historyBtn');
     const screenshotDisplay = document.getElementById('screenshot-display');
+    const modelToggle = document.getElementById('advanced-model-toggle');
 
     // Open the history page when the history button is clicked
     historyBtn.addEventListener('click', () => {
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Load the current state from storage
-    chrome.storage.local.get(['extensionActive', 'lastAnalysis', 'lastScreenshotUrl', 'totalCount', 'todayCount', 'lastDate'], (data) => {
+    chrome.storage.local.get(['extensionActive', 'lastAnalysis', 'lastScreenshotUrl', 'totalCount', 'todayCount', 'lastDate', 'useAdvancedModel'], (data) => {
         updateUI(data.extensionActive);
         if (data.lastAnalysis) {
             renderQuestion(data.lastAnalysis);
@@ -29,6 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update counters
         updateCounters(data.totalCount || 0, data.todayCount || 0, data.lastDate);
+
+        // Load saved model preference
+        modelToggle.checked = !!data.useAdvancedModel;
     });
 
     // Listen for changes in storage
@@ -57,6 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 chrome.runtime.sendMessage({ action: 'updateIcon', state: newState ? 'active' : 'inactive' });
             });
         });
+    });
+
+    // Model toggle change event
+    modelToggle.addEventListener('change', () => {
+        chrome.storage.local.set({ useAdvancedModel: modelToggle.checked });
     });
 
     /**
