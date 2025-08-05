@@ -54,11 +54,11 @@ This document tracks the user stories and implementation checklist for the AI Qu
     *   [x] Implement collapsible sections for explanation and detailed reasoning in both popup and history views.
     *   [x] Add an expand/collapse icon/button.
     *   [ ] Ensure UI/UX is clean, interesting, and minimal.
-*   [x] **User Story:** As a user, I want a seamless and automated experience when capturing and viewing answers.
-    *   [x] Display a loading indicator popup immediately after `Alt+S` is pressed.
-    *   [x] Automatically show a results popup (question and direct answer only) after Gemini response.
-    *   [x] Auto-dismiss the results popup after 5 seconds.
-    *   [x] Ensure clicking the extension icon still shows the full popup with all details.
+*   [ ] **User Story:** As a user, I want a seamless and automated experience when capturing and viewing answers.
+    *   [ ] Display a loading indicator popup immediately after `Alt+S` is pressed.
+    *   [ ] Automatically show a results popup (question and direct answer only) after Gemini response.
+    *   [ ] Auto-dismiss the results popup after 5 seconds.
+    *   [ ] Ensure clicking the extension icon still shows the full popup with all details.
 *   [x] **User Story:** As a user on macOS, I want an alternative keyboard shortcut for capturing screenshots.
     *   [x] Investigate and implement a suitable alternative to `Alt+S` for macOS.
 *   [x] **Bug:** Settings icon in the extension popup is not working.
