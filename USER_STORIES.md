@@ -19,9 +19,9 @@ This document tracks the user stories and implementation checklist for the AI Qu
 
 ## Phase 2: Enhanced Processing (Week 3-4)
 
-*   [ ] **User Story:** As a user, I want the extension to automatically detect all questions in the screenshot.
-    *   [ ] Integrate with the Gemini API in `background.js`.
-    *   [ ] Send the captured screenshot to the Gemini API for analysis.
+*   [x] **User Story:** As a user, I want the extension to automatically detect all questions in the screenshot.
+    *   [x] Integrate with the Gemini API in `background.js`.
+    *   [x] Send the captured screenshot to the Gemini API for analysis.
     *   [ ] Handle the API response and extract the identified questions.
 *   [ ] **User Story:** As a user, I want to see the formatted answers to the questions.
     *   [ ] Implement logic to display the questions and answers in `popup.html`.
