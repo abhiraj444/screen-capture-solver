@@ -16,7 +16,8 @@
   "commands": {
     "capture-screenshot": {
       "suggested_key": {
-        "default": "Alt+S"
+        "default": "Alt+S",
+        "mac": "Command+Shift+S"
       },
       "description": "Capture a screenshot of the current tab."
     }
