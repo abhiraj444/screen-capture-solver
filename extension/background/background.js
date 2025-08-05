@@ -8,46 +8,67 @@ import { analyzeScreenshot } from '../utils/api.js';
 
 
 
-const ICON_RED_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADRJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Red 16x16
-const ICON_GREEN_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Green 16x16
-const ICON_LOADING_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Blue 16x16
-
-/**
- * Converts a base64 image string to ImageData using OffscreenCanvas.
- * @param {string} base64 - The base64 encoded image string.
- * @returns {Promise<ImageData>} - A promise that resolves with the ImageData object.
- */
-async function createImageData(base64) {
-    const response = await fetch(base64);
-    const blob = await response.blob();
-    const imageBitmap = await createImageBitmap(blob);
-
-    const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imageBitmap, 0, 0);
-    return ctx.getImageData(0, 0, imageBitmap.width, imageBitmap.height);
-}
-
 /**
  * Updates the extension icon based on the provided state.
  * @param {string} state - The desired state: 'active', 'inactive', 'loading'.
  */
 async function updateIcon(state) {
-    let imageData;
-    switch (state) {
-        case 'active':
-            imageData = await createImageData(ICON_GREEN_BASE64);
-            break;
-        case 'inactive':
-            imageData = await createImageData(ICON_RED_BASE64);
-            break;
-        case 'loading':
-            imageData = await createImageData(ICON_LOADING_BASE64);
-            break;
-        default:
-            imageData = await createImageData(ICON_RED_BASE64); // Fallback
+    try {
+        let iconPath;
+        switch (state) {
+            case 'active':
+            case 'success':
+                iconPath = {
+                    "16": "/assets/icons/icon_green.png",
+                    "48": "/assets/icons/icon_green.png",
+                    "128": "/assets/icons/icon_green.png"
+                };
+                break;
+            case 'inactive':
+                iconPath = {
+                    "16": "/assets/icons/icon_red.png",
+                    "48": "/assets/icons/icon_red.png",
+                    "128": "/assets/icons/icon_red.png"
+                };
+                break;
+            case 'loading':
+                iconPath = {
+                    "16": "/assets/icons/icon_loading.png",
+                    "48": "/assets/icons/icon_loading.png",
+                    "128": "/assets/icons/icon_loading.png"
+                };
+                break;
+            default:
+                iconPath = {
+                    "16": "/assets/icons/icon_red.png",
+                    "48": "/assets/icons/icon_red.png",
+                    "128": "/assets/icons/icon_red.png"
+                }; // Fallback
+        }
+        await chrome.action.setIcon({ path: iconPath });
+        console.log(`Icon updated to: ${state}`);
+    } catch (error) {
+        console.error('Failed to update icon:', error);
+        // Fallback: try without leading slash
+        try {
+            let fallbackPath;
+            switch (state) {
+                case 'active':
+                case 'success':
+                    fallbackPath = "assets/icons/icon_green.png";
+                    break;
+                case 'loading':
+                    fallbackPath = "assets/icons/icon_loading.png";
+                    break;
+                default:
+                    fallbackPath = "assets/icons/icon_red.png";
+            }
+            await chrome.action.setIcon({ path: fallbackPath });
+            console.log(`Fallback icon updated to: ${state}`);
+        } catch (fallbackError) {
+            console.error('Fallback icon update also failed:', fallbackError);
+        }
     }
-    chrome.action.setIcon({ imageData: imageData });
 }
 
 // Initial icon state on extension load
@@ -92,7 +113,23 @@ chrome.commands.onCommand.addListener((command) => {
                             chrome.storage.local.set({ history: newHistory });
                         });
 
-                        updateIcon('active'); // Set icon to active after successful analysis
+                        updateIcon('success'); // Set icon to success after successful analysis
+                        
+                        // Show notification to user that results are ready
+                        chrome.notifications.create({
+                            type: 'basic',
+                            iconUrl: 'assets/icons/icon_green.png',
+                            title: 'Question Analysis Complete!',
+                            message: `Found ${analysis.questions_found || analysis.questions?.length || 0} question(s). Click the extension icon to view results.`
+                        });
+                        
+                        // Try to open popup programmatically (may not work in all cases)
+                        try {
+                            await chrome.action.openPopup();
+                        } catch (popupError) {
+                            console.log('Could not auto-open popup (this is normal):', popupError.message);
+                            // Fallback: The notification will guide the user to click the extension
+                        }
 
                     } catch (error) {
                         console.error('Error during analysis:', error);
@@ -107,13 +144,5 @@ chrome.commands.onCommand.addListener((command) => {
     }
 });
 
-// Handle extension icon click (to show full popup)
-chrome.action.onClicked.addListener(() => {
-    chrome.windows.create({
-        url: 'popup/popup.html?mode=full',
-        type: 'popup',
-        width: 400,
-        height: 600,
-        focused: true
-    });
-});
+// Note: Removed onClicked listener to allow normal popup behavior
+// The extension will use the default popup defined in manifest.json
