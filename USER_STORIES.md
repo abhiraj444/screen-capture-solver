@@ -40,8 +40,8 @@ This document tracks the user stories and implementation checklist for the AI Qu
     *   [x] Implement the history viewer interface.
 *   [x] **User Story:** As a user, I want to be able to search and filter my question history.
     *   [x] Implement search and filter functionality in `history.js`.
-*   [ ] **User Story:** As a user, I want to be able to export my question history.
-    *   [ ] Implement export functionality (e.g., to PDF or Markdown).
+*   [x] **User Story:** As a user, I want to be able to export my question history.
+    *   [x] Implement export functionality (e.g., to PDF or Markdown).
 
 ## Phase 4: Advanced Features (Week 7-8)
 

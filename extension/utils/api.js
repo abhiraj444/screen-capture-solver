@@ -8,7 +8,7 @@
  * @param {string} screenshotUrl - The data URL of the screenshot.
  * @returns {Promise<object>} - A promise that resolves with the analysis from the API.
  */
-async function analyzeScreenshot(screenshotUrl) {
+export async function analyzeScreenshot(screenshotUrl) {
     // TODO: Implement the actual API call to Gemini
     console.log('Sending screenshot to Gemini for analysis:', screenshotUrl);
 
