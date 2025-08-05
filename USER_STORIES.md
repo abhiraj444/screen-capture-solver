@@ -4,18 +4,18 @@ This document tracks the user stories and implementation checklist for the AI Qu
 
 ## Phase 1: Core Foundation (Week 1-2)
 
-*   [ ] **User Story:** As a user, I want to be able to install the Chrome extension.
-    *   [ ] Create `manifest.json` with basic extension properties.
-    *   [ ] Create basic `popup.html` and `popup.js`.
-    *   [ ] Create `background.js` service worker.
-    *   [ ] Create `content.js` for page interaction.
-*   [ ] **User Story:** As a user, I want to be able to activate and deactivate the extension.
-    *   [ ] Implement a toggle button in `popup.html`.
-    *   [ ] Implement logic in `popup.js` to manage the extension's state (active/inactive).
-    *   [ ] Display a visual indicator of the extension's status.
-*   [ ] **User Story:** As a user, I want to be able to take a screenshot of the current tab using a keyboard shortcut.
-    *   [ ] Define the `capture-screenshot` command in `manifest.json` (Alt+S).
-    *   [ ] Implement the screenshot capture logic in `background.js`.
+*   [x] **User Story:** As a user, I want to be able to install the Chrome extension.
+    *   [x] Create `manifest.json` with basic extension properties.
+    *   [x] Create basic `popup.html` and `popup.js`.
+    *   [x] Create `background.js` service worker.
+    *   [x] Create `content.js` for page interaction.
+*   [x] **User Story:** As a user, I want to be able to activate and deactivate the extension.
+    *   [x] Implement a toggle button in `popup.html`.
+    *   [x] Implement logic in `popup.js` to manage the extension's state (active/inactive).
+    *   [x] Display a visual indicator of the extension's status.
+*   [x] **User Story:** As a user, I want to be able to take a screenshot of the current tab using a keyboard shortcut.
+    *   [x] Define the `capture-screenshot` command in `manifest.json` (Alt+S).
+    *   [x] Implement the screenshot capture logic in `background.js`.
 
 ## Phase 2: Enhanced Processing (Week 3-4)
 
