@@ -38,8 +38,8 @@ This document tracks the user stories and implementation checklist for the AI Qu
 *   [x] **User Story:** As a user, I want to view my question history.
     *   [x] Create `history.html`, `history.js`, and `history.css`.
     *   [x] Implement the history viewer interface.
-*   [ ] **User Story:** As a user, I want to be able to search and filter my question history.
-    *   [ ] Implement search and filter functionality in `history.js`.
+*   [x] **User Story:** As a user, I want to be able to search and filter my question history.
+    *   [x] Implement search and filter functionality in `history.js`.
 *   [ ] **User Story:** As a user, I want to be able to export my question history.
     *   [ ] Implement export functionality (e.g., to PDF or Markdown).
 
