@@ -6,8 +6,6 @@
 
 import { analyzeScreenshot } from '../utils/api.js';
 
-import { analyzeScreenshot } from '../utils/api.js';
-
 // Listen for the screenshot command
 chrome.commands.onCommand.addListener((command) => {
     console.log(`Command received: ${command}`);
