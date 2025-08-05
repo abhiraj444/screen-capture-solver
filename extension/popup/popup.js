@@ -12,24 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsBtn = document.getElementById('settingsBtn');
     const exportBtn = document.getElementById('exportBtn'); // Assuming export button is also in popup.html
     const screenshotDisplay = document.getElementById('screenshot-display');
-    const statusBar = document.querySelector('.status-bar');
-    const statsBar = document.querySelector('.stats');
-    const actionsBar = document.querySelector('.actions');
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-
-    // Adjust UI based on mode
-    if (mode === 'results') {
-        statusBar.style.display = 'none';
-        statsBar.style.display = 'none';
-        actionsBar.style.display = 'none';
-        screenshotDisplay.style.display = 'none'; // Hide screenshot in results mode
-    } else { // Default to full mode
-        statusBar.style.display = 'flex';
-        statsBar.style.display = 'flex';
-        actionsBar.style.display = 'flex';
-    }
 
     // Open the history page when the history button is clicked
     historyBtn.addEventListener('click', () => {
@@ -45,9 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.get(['extensionActive', 'lastAnalysis', 'lastScreenshotUrl'], (data) => {
         updateUI(data.extensionActive);
         if (data.lastAnalysis) {
-            renderQuestion(data.lastAnalysis, mode);
+            renderQuestion(data.lastAnalysis);
         }
-        if (data.lastScreenshotUrl && mode !== 'results') { // Only show screenshot in full mode
+        if (data.lastScreenshotUrl) {
             screenshotDisplay.src = data.lastScreenshotUrl;
             screenshotDisplay.style.display = 'block';
         }
@@ -56,9 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for changes in storage
     chrome.storage.onChanged.addListener((changes, namespace) => {
         if (changes.lastAnalysis) {
-            renderQuestion(changes.lastAnalysis.newValue, mode);
+            renderQuestion(changes.lastAnalysis.newValue);
         }
-        if (changes.lastScreenshotUrl && mode !== 'results') {
+        if (changes.lastScreenshotUrl) {
             screenshotDisplay.src = changes.lastScreenshotUrl.newValue;
             screenshotDisplay.style.display = 'block';
         }
@@ -95,9 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Renders the question card(s) in the popup.
      * @param {object} analysis - The analysis object from the API.
-     * @param {string} displayMode - 'full' or 'results'
      */
-    function renderQuestion(analysis, displayMode) {
+    function renderQuestion(analysis) {
         if (!analysis || !analysis.questions || analysis.questions.length === 0) {
             recentQuestionEl.innerHTML = '<p>No questions found.</p>';
             return;
@@ -119,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="direct-answer">
                             <strong>Answer: ${question.direct_answer}</strong>
                         </div>
-                        ${displayMode === 'full' ? `
                         <div class="explanation-toggle">
                             <button class="collapsible">🔍 Show Explanation</button>
                             <div class="explanation-content">
@@ -127,26 +107,23 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <p><strong>Detailed Reasoning:</strong> ${question.detailed_reasoning}</p>
                             </div>
                         </div>
-                        ` : ''}
                     </div>
                 </div>
             `;
         });
         recentQuestionEl.innerHTML = allQuestionsHtml;
 
-        // Add event listeners for collapsible sections only in full mode
-        if (displayMode === 'full') {
-            document.querySelectorAll('.collapsible').forEach(button => {
-                button.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                    const content = this.nextElementSibling;
-                    if (content.style.maxHeight) {
-                        content.style.maxHeight = null;
-                    } else {
-                        content.style.maxHeight = content.scrollHeight + 'px';
-                    }
-                });
+        // Add event listeners for collapsible sections
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
             });
-        }
+        });
     }
 });

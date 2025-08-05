@@ -6,9 +6,6 @@
 
 import { analyzeScreenshot } from '../utils/api.js';
 
-let loadingWindowId = null;
-let resultsWindowId = null;
-
 // Listen for the screenshot command
 chrome.commands.onCommand.addListener((command) => {
     console.log(`Command received: ${command}`);
@@ -24,15 +21,6 @@ chrome.commands.onCommand.addListener((command) => {
                     }
                     console.log('Tab captured. Screenshot URL length:', screenshotUrl ? screenshotUrl.length : 'null');
 
-                    // 1. Show loading popup after screenshot is captured
-                    loadingWindowId = (await chrome.windows.create({
-                        url: 'loading/loading.html',
-                        type: 'popup',
-                        width: 300,
-                        height: 200,
-                        focused: true
-                    })).id;
-
                     try {
                         const analysis = await analyzeScreenshot(screenshotUrl);
                         console.log('Analysis complete:', analysis);
@@ -44,26 +32,18 @@ chrome.commands.onCommand.addListener((command) => {
                             chrome.storage.local.set({ history: newHistory });
                         });
 
-                        // 2. Close loading popup and show results popup
-                        if (loadingWindowId) chrome.windows.remove(loadingWindowId);
-                        resultsWindowId = (await chrome.windows.create({
-                            url: 'popup/popup.html?mode=results',
+                        // Open the full popup after analysis is complete
+                        chrome.windows.create({
+                            url: 'popup/popup.html?mode=full', // Always open in full mode
                             type: 'popup',
                             width: 400,
                             height: 600,
                             focused: true
-                        })).id;
-
-                        // Auto-dismiss after 5 seconds
-                        setTimeout(() => {
-                            if (resultsWindowId) chrome.windows.remove(resultsWindowId);
-                            resultsWindowId = null;
-                        }, 5000);
+                        });
 
                     } catch (error) {
                         console.error('Error during analysis:', error);
-                        if (loadingWindowId) chrome.windows.remove(loadingWindowId);
-                        // Optionally show an error message popup
+                        // Optionally show an error message in the console or a notification
                     }
                 });
             } else {
