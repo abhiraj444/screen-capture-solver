@@ -54,6 +54,8 @@ This document tracks the user stories and implementation checklist for the AI Qu
     *   [x] Implement collapsible sections for explanation and detailed reasoning in both popup and history views.
     *   [x] Add an expand/collapse icon/button.
     *   [x] Ensure UI/UX is clean, interesting, and minimal.
+*   [x] **User Story:** As a user, I want the extension icon to visually indicate its current status (inactive, active, analyzing).
+    *   [x] Implement icon changes based on extension state.
 *   [x] **User Story:** As a user on macOS, I want an alternative keyboard shortcut for capturing screenshots.
     *   [x] Investigate and implement a suitable alternative to `Alt+S` for macOS.
 *   [x] **Bug:** Settings icon in the extension popup is not working. (Removed as per user request)
