@@ -16,7 +16,7 @@ This document tracks the user stories and implementation checklist for the AI Qu
 *   [x] **User Story:** As a user, I want to be able to take a screenshot of the current tab using a keyboard shortcut.
     *   [x] Define the `capture-screenshot` command in `manifest.json` (Alt+S).
     *   [x] Implement the screenshot capture logic in `background.js`.
-    *   [ ] **Bug:** `Alt+S` not capturing screenshot (debugging and fixing).
+    *   [x] **Bug:** `Alt+S` not capturing screenshot (debugging and fixing).
 
 ## Phase 2: Enhanced Processing (Week 3-4)
 
@@ -57,7 +57,7 @@ This document tracks the user stories and implementation checklist for the AI Qu
 *   [x] **User Story:** As a user on macOS, I want an alternative keyboard shortcut for capturing screenshots.
     *   [x] Investigate and implement a suitable alternative to `Alt+S` for macOS.
 *   [x] **Bug:** Settings icon in the extension popup is not working. (Removed as per user request)
-*   [ ] **Bug:** Export button in the extension popup is not working. (Removed as per user request) (Removed as per user request)
+*   [x] **Bug:** Export button in the extension popup is not working. (Removed as per user request) (Removed as per user request)
 
 ## Phase 5: Polish & Deploy (Week 9-10)
 
