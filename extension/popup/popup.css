@@ -1,0 +1,62 @@
+/*
+ * This file contains the styles for the popup's user interface.
+ */
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 10px;
+    width: 300px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.status-indicator {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    background-color: #ccc;
+}
+
+.status-indicator.active {
+    background-color: #4CAF50;
+}
+
+.toggle-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #f44336;
+    color: white;
+    cursor: pointer;
+}
+
+.toggle-btn.active {
+    background-color: #4CAF50;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-around;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

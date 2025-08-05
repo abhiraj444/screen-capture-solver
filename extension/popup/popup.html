@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Question Solver</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Status Indicator -->
+        <div class="status-bar">
+            <div class="status-indicator" id="status">INACTIVE</div>
+            <div class="toggle-btn" id="toggleBtn">START</div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats">
+            <span>Today: <strong id="todayCount">0</strong></span>
+            <span>Total: <strong id="totalCount">0</strong></span>
+        </div>
+
+        <!-- Recent Question -->
+        <div class="recent-question" id="recentQuestion">
+            <!-- Populated after screenshot -->
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+            <button id="historyBtn">📚 History</button>
+            <button id="settingsBtn">⚙️ Settings</button>
+            <button id="exportBtn">📤 Export</button>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
