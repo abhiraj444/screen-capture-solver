@@ -1,0 +1,21 @@
+Command received: capture- screenshot
+background.js:11
+Extension active status: true
+background.js:14
+Attempting to capture visible tab...
+background.js:16
+Tab captured. Screenshot URL length: 120815
+background.js:22
+► Gemini API error: Object
+api.js:93
+▸ Attempt 1 failed: Error: Gemini API api.js:110 error: 404 - models/gemini-pro-vision is not found for API version vibeta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+at analyzeScreenshot (api.js:94:23) at async background.js:23:38
+Gemini API error: Object
+▸ Attempt 2 failed: Error: Gemini API
+api.js:93
+api.js:110
+error: 404 - models/gemini-pro-vision is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+at analyzeScreenshot (api.js:94:23)
+at async background.js:23:38
+► Gemini API error: ▸ Object
+api.js:93

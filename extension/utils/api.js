@@ -10,7 +10,7 @@
  */
 export async function analyzeScreenshot(screenshotUrl) {
     const GEMINI_API_KEY = 'AIzaSyDf4uTbOr91S26-OfZw8_S8460i9FjTsUo'; // Your Gemini API Key
-    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`;
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     const SYSTEM_PROMPT = `
 You are an expert academic assistant that analyzes screenshots to identify and solve questions.
