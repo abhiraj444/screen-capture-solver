@@ -6,28 +6,51 @@
 
 import { analyzeScreenshot } from '../utils/api.js';
 
-import { analyzeScreenshot } from '../utils/api.js';
+
+
+const ICON_RED_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Red 16x16
+const ICON_GREEN_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Green 16x16
+const ICON_LOADING_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Blue 16x16
+
+/**
+ * Converts a base64 image string to ImageData using OffscreenCanvas.
+ * @param {string} base64 - The base64 encoded image string.
+ * @returns {Promise<ImageData>} - A promise that resolves with the ImageData object.
+ */
+async function createImageData(base64) {
+    const img = await new Promise((resolve, reject) => {
+        const tempImg = new Image();
+        tempImg.onload = () => resolve(tempImg);
+        tempImg.onerror = reject;
+        tempImg.src = base64;
+    });
+
+    const canvas = new OffscreenCanvas(img.width, img.height);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    return ctx.getImageData(0, 0, img.width, img.height);
+}
 
 /**
  * Updates the extension icon based on the provided state.
  * @param {string} state - The desired state: 'active', 'inactive', 'loading'.
  */
-function updateIcon(state) {
-    let iconPath = 'assets/icons/';
+async function updateIcon(state) {
+    let imageData;
     switch (state) {
         case 'active':
-            iconPath += 'icon_green.png';
+            imageData = await createImageData(ICON_GREEN_BASE64);
             break;
         case 'inactive':
-            iconPath += 'icon_red.png';
+            imageData = await createImageData(ICON_RED_BASE64);
             break;
         case 'loading':
-            iconPath += 'icon_loading.png';
+            imageData = await createImageData(ICON_LOADING_BASE64);
             break;
         default:
-            iconPath += 'icon_red.png'; // Fallback to red if state is unknown
+            imageData = await createImageData(ICON_RED_BASE64); // Fallback
     }
-    chrome.action.setIcon({ path: iconPath });
+    chrome.action.setIcon({ imageData: imageData });
 }
 
 // Initial icon state on extension load
