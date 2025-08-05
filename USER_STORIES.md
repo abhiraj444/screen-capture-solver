@@ -33,11 +33,11 @@ This document tracks the user stories and implementation checklist for the AI Qu
 
 ## Phase 3: Storage & History (Week 5-6)
 
-*   [ ] **User Story:** As a user, I want my question history to be saved locally.
-    *   [ ] Use `chrome.storage.local` to store the question history.
-*   [ ] **User Story:** As a user, I want to view my question history.
-    *   [ ] Create `history.html`, `history.js`, and `history.css`.
-    *   [ ] Implement the history viewer interface.
+*   [x] **User Story:** As a user, I want my question history to be saved locally.
+    *   [x] Use `chrome.storage.local` to store the question history.
+*   [x] **User Story:** As a user, I want to view my question history.
+    *   [x] Create `history.html`, `history.js`, and `history.css`.
+    *   [x] Implement the history viewer interface.
 *   [ ] **User Story:** As a user, I want to be able to search and filter my question history.
     *   [ ] Implement search and filter functionality in `history.js`.
 *   [ ] **User Story:** As a user, I want to be able to export my question history.
