@@ -8,22 +8,29 @@ import { analyzeScreenshot } from '../utils/api.js';
 
 // Listen for the screenshot command
 chrome.commands.onCommand.addListener((command) => {
+    console.log(`Command received: ${command}`);
     if (command === 'capture-screenshot') {
-        // Check if the extension is active
         chrome.storage.local.get('extensionActive', (data) => {
+            console.log(`Extension active status: ${data.extensionActive}`);
             if (data.extensionActive) {
-                // Capture the visible tab
+                console.log('Attempting to capture visible tab...');
                 chrome.tabs.captureVisibleTab(async (screenshotUrl) => {
+                    if (chrome.runtime.lastError) {
+                        console.error('Error capturing tab:', chrome.runtime.lastError.message);
+                        return;
+                    }
+                    console.log('Tab captured. Screenshot URL length:', screenshotUrl ? screenshotUrl.length : 'null');
                     const analysis = await analyzeScreenshot(screenshotUrl);
                     console.log('Analysis complete:', analysis);
                     chrome.storage.local.set({ lastAnalysis: analysis, lastScreenshotUrl: screenshotUrl });
 
-                    // Store the analysis in the history
                     chrome.storage.local.get({ history: [] }, (data) => {
-                        const newHistory = [analysis, ...data.history];
+                        const newHistory = [analysis, ...data.history]; // Only store the analysis object
                         chrome.storage.local.set({ history: newHistory });
                     });
                 });
+            } else {
+                console.log('Extension is inactive. Not capturing screenshot.');
             }
         });
     }
