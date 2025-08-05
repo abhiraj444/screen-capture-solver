@@ -4,6 +4,9 @@
  * renders the results on the page, and allows exporting the history.
  */
 
+// Import Firebase functions
+import { getHistoryFromFirestore, syncHistoryFromFirestore } from '../utils/firebase.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const historyContainer = document.getElementById('history-container');
     const searchInput = document.getElementById('search-input');
@@ -22,21 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let filteredHistory = [];
 
     // Load the history from storage
-    chrome.storage.local.get({ history: [] }, (data) => {
-        fullHistory = data.history || [];
-        console.log('Loaded history:', fullHistory);
-        console.log('Number of entries:', fullHistory.length);
-        
-        // Debug: log structure of first entry if it exists
-        if (fullHistory.length > 0) {
-            console.log('First entry structure:', fullHistory[0]);
-            console.log('First entry questions:', fullHistory[0].questions);
-        }
-        
-        populateSubjectFilter();
-        updateStats();
-        applyFilters();
-    });
+    loadHistoryData();
 
     // Add event listeners for the controls
     searchInput.addEventListener('input', applyFilters);
@@ -57,6 +46,53 @@ document.addEventListener('DOMContentLoaded', () => {
     actionsBar.insertBefore(exportPdfBtn, document.getElementById('clear-btn'));
 
     exportPdfBtn.addEventListener('click', () => exportToPDF(filteredHistory));
+
+    /**
+     * Loads history data from local storage, with Firebase fallback
+     */
+    async function loadHistoryData() {
+        try {
+            // First try to load from local storage
+            const data = await new Promise(resolve => {
+                chrome.storage.local.get({ history: [] }, resolve);
+            });
+            
+            fullHistory = data.history || [];
+            console.log('Loaded local history:', fullHistory.length, 'entries');
+            
+            // If local storage is empty, try to sync from Firebase
+            if (fullHistory.length === 0) {
+                console.log('Local history is empty, syncing from Firebase...');
+                await syncHistoryFromFirestore();
+                
+                // Reload from local storage after sync
+                const syncedData = await new Promise(resolve => {
+                    chrome.storage.local.get({ history: [] }, resolve);
+                });
+                
+                fullHistory = syncedData.history || [];
+                console.log('After Firebase sync:', fullHistory.length, 'entries');
+            }
+            
+            // Debug: log structure of first entry if it exists
+            if (fullHistory.length > 0) {
+                console.log('First entry structure:', fullHistory[0]);
+                console.log('First entry questions:', fullHistory[0].questions);
+            }
+            
+            populateSubjectFilter();
+            updateStats();
+            applyFilters();
+            
+        } catch (error) {
+            console.error('Error loading history data:', error);
+            // Fallback to empty history
+            fullHistory = [];
+            populateSubjectFilter();
+            updateStats();
+            applyFilters();
+        }
+    }
 
     /**
      * Populates the subject filter dropdown with unique subjects from history

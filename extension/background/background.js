@@ -5,6 +5,7 @@
  */
 
 import { analyzeScreenshot, analyzeSelectedText } from '../utils/api.js';
+import { initializeFirebase, saveHistoryToFirestore, syncHistoryFromFirestore } from '../utils/firebase.js';
 
 /**
  * Updates the extension icon based on the provided state.
@@ -70,7 +71,19 @@ async function updateIcon(state) {
 }
 
 // Initial icon state on extension load
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async (details) => {
+    // Initialize Firebase on first install or update
+    await initializeFirebase();
+
+    if (details.reason === 'install') {
+        // This is a fresh installation
+        console.log('Extension installed for the first time!');
+    }
+
+    // Sync history from Firestore on startup
+    await syncHistoryFromFirestore();
+
+    // Set initial icon state
     chrome.storage.local.get('extensionActive', (data) => {
         updateIcon(data.extensionActive ? 'active' : 'inactive');
     });
@@ -166,40 +179,51 @@ function handleSelectedTextCapture() {
  * @param {object} analysis - The analysis object from the API.
  * @param {string} [screenshotUrl] - The data URL of the screenshot (if any).
  */
-function handleAnalysisResponse(analysis, screenshotUrl = null) {
+async function handleAnalysisResponse(analysis, screenshotUrl = null) {
     console.log('Analysis complete:', analysis);
-    chrome.storage.local.set({ lastAnalysis: analysis, lastScreenshotUrl: screenshotUrl });
+    
+    const enhancedAnalysis = {
+        ...analysis,
+        timestamp: new Date().toISOString(),
+        date: new Date().toDateString(),
+        time: new Date().toLocaleTimeString(),
+        screenshotUrl: screenshotUrl
+    };
+    
+    // Save to local storage first for immediate availability
+    await new Promise(resolve => {
+        chrome.storage.local.set({ lastAnalysis: enhancedAnalysis, lastScreenshotUrl: screenshotUrl }, resolve);
+    });
 
     // Store the analysis in the history and update counters
-    chrome.storage.local.get({ history: [], totalCount: 0, todayCount: 0, lastDate: null }, (data) => {
-        const enhancedAnalysis = {
-            ...analysis,
-            timestamp: new Date().toISOString(),
-            date: new Date().toDateString(),
-            time: new Date().toLocaleTimeString(),
-            screenshotUrl: screenshotUrl
-        };
-        
-        const newHistory = [enhancedAnalysis, ...data.history];
-        const questionsCount = analysis.questions_found || analysis.questions?.length || 0;
-        const today = new Date().toDateString();
-        
-        let newTodayCount = data.todayCount;
-        let newTotalCount = data.totalCount + questionsCount;
-        
-        if (data.lastDate !== today) {
-            newTodayCount = questionsCount;
-        } else {
-            newTodayCount += questionsCount;
-        }
-        
+    const data = await new Promise(resolve => {
+        chrome.storage.local.get({ history: [], totalCount: 0, todayCount: 0, lastDate: null }, resolve);
+    });
+    
+    const newHistory = [enhancedAnalysis, ...data.history];
+    const questionsCount = analysis.questions_found || analysis.questions?.length || 0;
+    const today = new Date().toDateString();
+    
+    let newTodayCount = data.todayCount;
+    let newTotalCount = data.totalCount + questionsCount;
+    
+    if (data.lastDate !== today) {
+        newTodayCount = questionsCount;
+    } else {
+        newTodayCount += questionsCount;
+    }
+    
+    await new Promise(resolve => {
         chrome.storage.local.set({ 
             history: newHistory,
             totalCount: newTotalCount,
             todayCount: newTodayCount,
             lastDate: today
-        });
+        }, resolve);
     });
+
+    // Save to Firestore in the background
+    await saveHistoryToFirestore(enhancedAnalysis);
 
     updateIcon('success'); // Set icon to success after successful analysis
     
