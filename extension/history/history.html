@@ -9,6 +9,21 @@
 <body>
     <div class="container">
         <h1>Question History</h1>
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Search questions...">
+            <select id="subject-filter">
+                <option value="all">All Subjects</option>
+                <option value="math">Math</option>
+                <option value="geography">Geography</option>
+                <!-- Add more subjects as needed -->
+            </select>
+            <select id="difficulty-filter">
+                <option value="all">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
         <div id="history-container"></div>
     </div>
     <script src="history.js"></script>
