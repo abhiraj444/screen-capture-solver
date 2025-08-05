@@ -47,12 +47,14 @@ document.addEventListener('DOMContentLoaded', () => {
     clearBtn.addEventListener('click', clearAllHistory);
 
     // Add Export to PDF button to controls bar
-    const controlsBar = document.getElementById('controls-bar');
+    const actionsBar = document.querySelector('.actions');
     const exportPdfBtn = document.createElement('button');
     exportPdfBtn.id = 'export-pdf-btn';
     exportPdfBtn.textContent = 'Export to PDF';
     exportPdfBtn.className = 'btn btn-secondary';
-    controlsBar.appendChild(exportPdfBtn);
+
+    // Insert Export to PDF button between Export and Clear All
+    actionsBar.insertBefore(exportPdfBtn, document.getElementById('clear-btn'));
 
     exportPdfBtn.addEventListener('click', () => exportToPDF(filteredHistory));
 
@@ -361,8 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
         h1 { color: #2c3e50; border-bottom: 2px solid #eee; }
         .question-block { margin-bottom: 32px; padding: 16px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
         .question-title { font-size: 1.1em; font-weight: bold; margin-bottom: 8px; }
-        .answer { color: #1a7f37; margin-bottom: 8px; }
-        .analysis { color: #555; margin-bottom: 8px; }
+        .answer { color: #222; margin-bottom: 8px; } /* Black */
+        .analysis { color: #444; margin-bottom: 8px; } /* Dark gray */
         .meta { font-size: 0.95em; color: #888; }
     </style>
 </head>
@@ -376,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="question-block">
         <div class="question-title">Q${analysisIndex + 1}.${questionIndex + 1}: ${question.formatted_question || ''}</div>
         <div class="answer"><strong>Answer:</strong> ${question.direct_answer || ''}</div>
-        <div class="analysis"><strong>Analysis:</strong> ${question.explanation || ''}</div>
+        <div class="analysis"><strong>Explanation:</strong> ${question.explanation || ''}</div>
         <div class="meta">
             <span><strong>Subject:</strong> ${question.subject || 'Unknown'}</span> |
             <span><strong>Difficulty:</strong> ${question.difficulty || 'Unknown'}</span>
