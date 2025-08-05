@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newState = !data.extensionActive;
             chrome.storage.local.set({ extensionActive: newState }, () => {
                 updateUI(newState);
+                chrome.runtime.sendMessage({ action: 'updateIcon', state: newState ? 'active' : 'inactive' });
             });
         });
     });
