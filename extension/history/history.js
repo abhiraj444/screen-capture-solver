@@ -141,33 +141,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const difficulty = difficultyFilter.value;
         const dateFilterValue = dateFilter.value;
 
-        filteredHistory = fullHistory.filter(analysis => {
-            // Check date filter first
-            if (!matchesDateFilter(analysis.timestamp, dateFilterValue)) {
-                return false;
-            }
-            
-            // Check if analysis has questions
-            if (!analysis.questions || analysis.questions.length === 0) {
-                return false;
-            }
-            
-            // Check if any question in the analysis matches the filters
-            return analysis.questions.some(question => {
-                const matchesSearch = searchTerm === '' ||
-                    (question.formatted_question && question.formatted_question.toLowerCase().includes(searchTerm)) ||
-                    (question.direct_answer && question.direct_answer.toLowerCase().includes(searchTerm)) ||
-                    (question.explanation && question.explanation.toLowerCase().includes(searchTerm));
+        filteredHistory = fullHistory
+            .filter(analysis => matchesDateFilter(analysis.timestamp, dateFilterValue))
+            .map(analysis => {
+                // Filter questions inside each analysis
+                const filteredQuestions = (analysis.questions || []).filter(question => {
+                    const matchesSearch = searchTerm === '' ||
+                        (question.formatted_question && question.formatted_question.toLowerCase().includes(searchTerm)) ||
+                        (question.direct_answer && question.direct_answer.toLowerCase().includes(searchTerm)) ||
+                        (question.explanation && question.explanation.toLowerCase().includes(searchTerm));
 
-                const matchesSubject = subject === 'all' || (question.subject && question.subject === subject);
-                const matchesDifficulty = difficulty === 'all' || (
-                    question.difficulty &&
-                    question.difficulty.toString().trim().toLowerCase() === difficulty.trim().toLowerCase()
-                );
+                    const matchesSubject = subject === 'all' || (question.subject && question.subject === subject);
+                    const matchesDifficulty = difficulty === 'all' || (
+                        question.difficulty &&
+                        question.difficulty.toString().trim().toLowerCase() === difficulty.trim().toLowerCase()
+                    );
 
-                return matchesSearch && matchesSubject && matchesDifficulty;
-            });
-        });
+                    return matchesSearch && matchesSubject && matchesDifficulty;
+                });
+
+                // Return a new analysis object with only filtered questions
+                return {
+                    ...analysis,
+                    questions: filteredQuestions
+                };
+            })
+            // Only keep analyses that have at least one matching question
+            .filter(analysis => analysis.questions && analysis.questions.length > 0);
 
         // Update filtered count
         const filteredQuestionCount = filteredHistory.reduce((count, analysis) => {
