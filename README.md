@@ -21,6 +21,17 @@ This extension uses Firebase for persistent storage. You'll need to set up a Fir
 2. Create a new project
 3. Enable **Firestore Database** in test mode
 4. Enable **Authentication** and turn on **Anonymous** sign-in method
+5. In Firestore Database rules, set rules to allow anonymous access:
+   ```
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /users/{userId}/{document=**} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+       }
+     }
+   }
+   ```
 5. Go to Project Settings > General > Your apps
 6. Add a web app and copy the configuration
 7. Replace the placeholder values in `extension/utils/firebaseConfig.js` with your actual Firebase config:

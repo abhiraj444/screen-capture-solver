@@ -52,40 +52,50 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function loadHistoryData() {
         try {
+            console.log('History page: Starting to load history data...');
+            
             // First try to load from local storage
             const data = await new Promise(resolve => {
                 chrome.storage.local.get({ history: [] }, resolve);
             });
             
             fullHistory = data.history || [];
-            console.log('Loaded local history:', fullHistory.length, 'entries');
+            console.log('History page: Loaded local history:', fullHistory.length, 'entries');
             
             // If local storage is empty, try to sync from Firebase
             if (fullHistory.length === 0) {
-                console.log('Local history is empty, syncing from Firebase...');
-                await syncHistoryFromFirestore();
-                
-                // Reload from local storage after sync
-                const syncedData = await new Promise(resolve => {
-                    chrome.storage.local.get({ history: [] }, resolve);
-                });
-                
-                fullHistory = syncedData.history || [];
-                console.log('After Firebase sync:', fullHistory.length, 'entries');
+                console.log('History page: Local history is empty, syncing from Firebase...');
+                try {
+                    await syncHistoryFromFirestore();
+                    
+                    // Reload from local storage after sync
+                    const syncedData = await new Promise(resolve => {
+                        chrome.storage.local.get({ history: [] }, resolve);
+                    });
+                    
+                    fullHistory = syncedData.history || [];
+                    console.log('History page: After Firebase sync:', fullHistory.length, 'entries');
+                } catch (firebaseError) {
+                    console.error('History page: Firebase sync failed:', firebaseError);
+                }
             }
             
             // Debug: log structure of first entry if it exists
             if (fullHistory.length > 0) {
-                console.log('First entry structure:', fullHistory[0]);
-                console.log('First entry questions:', fullHistory[0].questions);
+                console.log('History page: First entry structure:', fullHistory[0]);
+                console.log('History page: First entry questions:', fullHistory[0].questions);
+            } else {
+                console.log('History page: No history entries found.');
             }
             
+            console.log('History page: Populating UI...');
             populateSubjectFilter();
             updateStats();
             applyFilters();
+            console.log('History page: UI population complete.');
             
         } catch (error) {
-            console.error('Error loading history data:', error);
+            console.error('History page: Error loading history data:', error);
             // Fallback to empty history
             fullHistory = [];
             populateSubjectFilter();
