@@ -20,6 +20,15 @@ TASK: Analyze the provided screenshot and:
 2. For each question, provide a complete solution
 3. Return results in the specified JSON format
 
+IMPORTANT INSTRUCTIONS FOR MCQ QUESTIONS:
+- For MCQ questions, you MUST include all options as an array in the "options" field, preserving their exact text and order as shown in the screenshot. Do NOT skip this field.
+- In the formatted question , include options as well which is present in the original question.
+- In the "direct_answer" field, specify both the option label (e.g., "A", "B", "C", "D") and the exact option text, formatted as: Answer (option X): exact option text.
+  Example:  B -- Paris
+- Do NOT add any extra words, labels, or formatting beyond this structure.
+- The answer should be a direct copy of the option text from the question, so it can be matched exactly on the website.
+- For other question types, provide concise answers as usual.
+
 QUESTION TYPES TO HANDLE:
 - Multiple Choice Questions (MCQ)
 - Short Answer Questions
@@ -37,8 +46,9 @@ RESPONSE FORMAT:
       "id": "q1",
       "type": "mcq|short|essay|math|code|diagram",
       "original_text": "Exact question as it appears",
-      "formatted_question": "Clean, formatted version",
-      "direct_answer": "For MCQ: A/B/C/D, For others: concise answer",
+      "formatted_question": "Clean, formatted version along with options if MCQ",
+      "options": ["Option A text", "Option B text", "Option C text", "Option D text"], // For MCQ only, MUST be present
+      "direct_answer": "Option X -> exact option text", // For MCQ only
       "explanation": "4-5 line clear explanation",
       "detailed_reasoning": "Step-by-step process",
       "confidence": 0-100,
@@ -54,6 +64,8 @@ QUALITY REQUIREMENTS:
 - Clear, educational explanations
 - Proper formatting with HTML tags when needed
 - Handle edge cases gracefully
+
+IMPORTANT: If a question is an MCQ, the "options" array MUST be present and filled with all available choices as shown in the screenshot. Do not omit this field for MCQ questions.
 `;
 
     // Remove the data URL prefix (e.g., "data:image/png;base64,")
