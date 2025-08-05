@@ -16,23 +16,22 @@ chrome.commands.onCommand.addListener((command) => {
         chrome.storage.local.get('extensionActive', async (data) => {
             console.log(`Extension active status: ${data.extensionActive}`);
             if (data.extensionActive) {
-                // 1. Show loading popup
-                loadingWindowId = (await chrome.windows.create({
-                    url: 'loading/loading.html',
-                    type: 'popup',
-                    width: 300,
-                    height: 200,
-                    focused: true
-                })).id;
-
                 console.log('Attempting to capture visible tab...');
                 chrome.tabs.captureVisibleTab(async (screenshotUrl) => {
                     if (chrome.runtime.lastError) {
                         console.error('Error capturing tab:', chrome.runtime.lastError.message);
-                        if (loadingWindowId) chrome.windows.remove(loadingWindowId);
                         return;
                     }
                     console.log('Tab captured. Screenshot URL length:', screenshotUrl ? screenshotUrl.length : 'null');
+
+                    // 1. Show loading popup after screenshot is captured
+                    loadingWindowId = (await chrome.windows.create({
+                        url: 'loading/loading.html',
+                        type: 'popup',
+                        width: 300,
+                        height: 200,
+                        focused: true
+                    })).id;
 
                     try {
                         const analysis = await analyzeScreenshot(screenshotUrl);
