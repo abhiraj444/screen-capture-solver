@@ -46,6 +46,16 @@ document.addEventListener('DOMContentLoaded', () => {
     exportBtn.addEventListener('click', () => exportToMarkdown(filteredHistory));
     clearBtn.addEventListener('click', clearAllHistory);
 
+    // Add Export to PDF button to controls bar
+    const controlsBar = document.getElementById('controls-bar');
+    const exportPdfBtn = document.createElement('button');
+    exportPdfBtn.id = 'export-pdf-btn';
+    exportPdfBtn.textContent = 'Export to PDF';
+    exportPdfBtn.className = 'btn btn-secondary';
+    controlsBar.appendChild(exportPdfBtn);
+
+    exportPdfBtn.addEventListener('click', () => exportToPDF(filteredHistory));
+
     /**
      * Populates the subject filter dropdown with unique subjects from history
      */
@@ -328,5 +338,64 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    /**
+     * Exports the given history to a PDF file using Chrome's print dialog.
+     * Only includes question, answer, and analysis (not reasoning).
+     * @param {Array<object>} history - The array of analysis objects to export.
+     */
+    function exportToPDF(history) {
+        if (!history || history.length === 0) {
+            alert('No history to export.');
+            return;
+        }
+
+        let htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question History PDF Export</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; }
+        .question-block { margin-bottom: 32px; padding: 16px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
+        .question-title { font-size: 1.1em; font-weight: bold; margin-bottom: 8px; }
+        .answer { color: #1a7f37; margin-bottom: 8px; }
+        .analysis { color: #555; margin-bottom: 8px; }
+        .meta { font-size: 0.95em; color: #888; }
+    </style>
+</head>
+<body>
+    <h1>Exported Question History</h1>
+`;
+
+        history.forEach((analysis, analysisIndex) => {
+            (analysis.questions || []).forEach((question, questionIndex) => {
+                htmlContent += `
+    <div class="question-block">
+        <div class="question-title">Q${analysisIndex + 1}.${questionIndex + 1}: ${question.formatted_question || ''}</div>
+        <div class="answer"><strong>Answer:</strong> ${question.direct_answer || ''}</div>
+        <div class="analysis"><strong>Analysis:</strong> ${question.explanation || ''}</div>
+        <div class="meta">
+            <span><strong>Subject:</strong> ${question.subject || 'Unknown'}</span> |
+            <span><strong>Difficulty:</strong> ${question.difficulty || 'Unknown'}</span>
+        </div>
+    </div>
+                `;
+            });
+        });
+
+        htmlContent += `
+</body>
+</html>
+`;
+
+        // Open in new window and trigger print dialog
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
     }
 });
