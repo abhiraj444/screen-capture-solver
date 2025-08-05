@@ -60,3 +60,24 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
+
+.question-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.question-content {
+    margin-bottom: 10px;
+}
+
+.answer-section {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}

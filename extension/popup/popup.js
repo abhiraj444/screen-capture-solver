@@ -7,10 +7,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('toggleBtn');
     const statusEl = document.getElementById('status');
+    const recentQuestionEl = document.getElementById('recentQuestion');
 
     // Load the current state from storage
-    chrome.storage.local.get('extensionActive', (data) => {
+    chrome.storage.local.get(['extensionActive', 'lastAnalysis'], (data) => {
         updateUI(data.extensionActive);
+        if (data.lastAnalysis) {
+            renderQuestion(data.lastAnalysis);
+        }
+    });
+
+    // Listen for changes in storage
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+        if (changes.lastAnalysis) {
+            renderQuestion(changes.lastAnalysis.newValue);
+        }
     });
 
     // Toggle the extension's state when the button is clicked
@@ -39,5 +50,39 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleBtn.textContent = 'START';
             toggleBtn.classList.remove('active');
         }
+    }
+
+    /**
+     * Renders the question card in the popup.
+     * @param {object} analysis - The analysis object from the API.
+     */
+    function renderQuestion(analysis) {
+        if (!analysis || !analysis.questions || analysis.questions.length === 0) {
+            recentQuestionEl.innerHTML = '<p>No questions found.</p>';
+            return;
+        }
+
+        const question = analysis.questions[0];
+
+        recentQuestionEl.innerHTML = `
+            <div class="question-card">
+                <div class="question-header">
+                    <span class="question-number">Q1</span>
+                    <span class="confidence-score">${question.confidence}%</span>
+                    <span class="question-type">${question.type}</span>
+                </div>
+                <div class="question-content">
+                    ${question.formatted_question}
+                </div>
+                <div class="answer-section">
+                    <div class="direct-answer">
+                        <strong>Answer: ${question.direct_answer}</strong>
+                    </div>
+                    <div class="explanation">
+                        ${question.explanation}
+                    </div>
+                </div>
+            </div>
+        `;
     }
 });
