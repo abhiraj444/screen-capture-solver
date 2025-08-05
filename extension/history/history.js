@@ -1,7 +1,7 @@
 /**
  * This file contains the logic for the history page.
  * It retrieves the question history from storage, allows users to filter it,
- * and renders the results on the page.
+ * renders the results on the page, and allows exporting the history.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,19 +9,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const subjectFilter = document.getElementById('subject-filter');
     const difficultyFilter = document.getElementById('difficulty-filter');
+    const exportBtn = document.getElementById('export-btn');
 
     let fullHistory = [];
+    let filteredHistory = [];
 
     // Load the history from storage
     chrome.storage.local.get({ history: [] }, (data) => {
         fullHistory = data.history || [];
-        renderHistory(fullHistory);
+        applyFilters();
     });
 
     // Add event listeners for the controls
     searchInput.addEventListener('input', applyFilters);
     subjectFilter.addEventListener('change', applyFilters);
     difficultyFilter.addEventListener('change', applyFilters);
+    exportBtn.addEventListener('click', () => exportToMarkdown(filteredHistory));
 
     /**
      * Applies the current search and filter values to the history.
@@ -31,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const subject = subjectFilter.value;
         const difficulty = difficultyFilter.value;
 
-        const filteredHistory = fullHistory.filter(analysis => {
+        filteredHistory = fullHistory.filter(analysis => {
             const question = analysis.questions[0];
             if (!question) return false;
 
@@ -72,5 +75,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         }).join('');
+    }
+
+    /**
+     * Exports the given history to a Markdown file.
+     * @param {Array<object>} history - The array of analysis objects to export.
+     */
+    function exportToMarkdown(history) {
+        if (!history || history.length === 0) {
+            alert('No history to export.');
+            return;
+        }
+
+        const markdownContent = history.map(analysis => {
+            const question = analysis.questions[0];
+            return `
+## Question
+**Question:** ${question.formatted_question}
+**Answer:** ${question.direct_answer}
+**Subject:** ${question.subject}
+**Difficulty:** ${question.difficulty}
+---
+            `;
+        }).join('');
+
+        const blob = new Blob([markdownContent], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'question_history.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 });
