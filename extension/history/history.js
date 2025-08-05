@@ -161,7 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const matchesSubject = subject === 'all' || (question.subject && question.subject === subject);
                 const matchesDifficulty = difficulty === 'all' || (
-                    question.difficulty && question.difficulty.toLowerCase() === difficulty.toLowerCase()
+                    question.difficulty &&
+                    question.difficulty.toString().trim().toLowerCase() === difficulty.trim().toLowerCase()
                 );
 
                 return matchesSearch && matchesSubject && matchesDifficulty;
