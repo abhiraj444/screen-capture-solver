@@ -10,49 +10,22 @@ import { analyzeScreenshot } from '../utils/api.js';
  * Updates the extension icon based on the provided state.
  * @param {string} state - The desired state: 'active', 'inactive', 'loading'.
  */
-const ICON_RED_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Red 16x16
-const ICON_GREEN_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Green 16x16
-const ICON_LOADING_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADJJREFUOE9jZGBgYGDgYmBgYAAABQAB/gYAA54B8wAAAABJRU5ErkJggg=='; // Solid Blue 16x16
-
-/**
- * Converts a base64 image string to ImageData.
- * @param {string} base64 - The base64 encoded image string.
- * @returns {Promise<ImageData>} - A promise that resolves with the ImageData object.
- */
-function getImageDataFromBase64(base64) {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = new OffscreenCanvas(img.width, img.height);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            resolve(ctx.getImageData(0, 0, img.width, img.height));
-        };
-        img.src = base64;
-    });
-}
-
-/**
- * Updates the extension icon based on the provided state.
- * @param {string} state - The desired state: 'active', 'inactive', 'loading'.
- */
-async function updateIcon(state) {
-    let imageData;
+function updateIcon(state) {
+    let iconPath = 'assets/icons/';
     switch (state) {
         case 'active':
-            imageData = await getImageDataFromBase64(ICON_GREEN_BASE64);
+            iconPath += 'icon_green.png';
             break;
         case 'inactive':
-            imageData = await getImageDataFromBase64(ICON_RED_BASE64);
+            iconPath += 'icon_red.png';
             break;
         case 'loading':
-            imageData = await getImageDataFromBase64(ICON_LOADING_BASE64);
+            iconPath += 'icon_loading.png';
             break;
         default:
-            // Fallback to a default if needed, though not expected with defined states
-            imageData = await getImageDataFromBase64(ICON_RED_BASE64);
+            iconPath += 'icon128.png'; // Default icon
     }
-    chrome.action.setIcon({ imageData: imageData });
+    chrome.action.setIcon({ path: iconPath });
 }
 
 // Listen for messages from popup.js to update icon
