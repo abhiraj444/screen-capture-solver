@@ -179,11 +179,12 @@ IMPORTANT FILTERING INSTRUCTIONS:
 - Ignore any non-question content like page headers, navigation, advertisements, etc.
 - If the text contains multiple questions, extract and solve each one separately
 
+
 FORMATTING INSTRUCTIONS:
 - If any part of the question, options, or answer contains code, ALWAYS format code using HTML <pre><code class="language-xxx">...</code></pre> blocks (not Markdown triple backticks).
 - Do NOT use Markdown code blocks (i.e., do NOT use \`\`\`).
 - Preserve code indentation and syntax highlighting by specifying the correct language in the class attribute (e.g., language-java, language-python).
-- For MCQ questions, include all options as an array in the "options" field, preserving their exact text and order.
+- For MCQ questions, include all options as an array in the "options" field, preserving their exact text and order as shown in the selected text.
 - In the "direct_answer" field for MCQ, specify both the option label (e.g., "A", "B", "C", "D") and the exact option text, formatted as: Answer (option X): exact option text.
 - For other question types, provide concise answers as usual.
 
@@ -204,12 +205,12 @@ RESPONSE FORMAT:
     {
       "id": "q1",
       "type": "mcq|short|essay|math|code|concept|truefalse",
-      "original_text": "Exact question as it appears in the selected text",
-      "formatted_question": "Clean, well-formatted version of the question with code in <pre><code> blocks if present",
+      "original_text": "Exact question as it appears",
+      "formatted_question": "Exact question and exact options as it appears in the selected text, with code always in <pre><code> blocks",
       "options": ["Option A text", "Option B text", ...], // For MCQ only
-      "direct_answer": "For MCQ: Answer (option X): exact option text. For others: concise answer, with code in <pre><code> blocks if present.",
-      "explanation": "4-5 line clear explanation, with code in <pre><code> blocks if present.",
-      "detailed_reasoning": "Step-by-step process, with code in <pre><code> blocks if present.",
+      "direct_answer": "For MCQ: If question is asking to choose multiple option then Answer (option X/Y/Z/W) along with text of the option, otherwise if it looks like single answer then Answer (option X): exact option text. For others: concise answer, with code always in <pre><code> blocks if present.",
+      "explanation": "4-5 line clear explanation, with code always in <pre><code> blocks if present.",
+      "detailed_reasoning": "Step-by-step process, with code always in <pre><code> blocks if present.",
       "confidence": 0-100,
       "difficulty": "easy|medium|hard",
       "subject": "math|physics|chemistry|programming|etc",
