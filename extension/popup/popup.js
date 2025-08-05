@@ -9,18 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusEl = document.getElementById('status');
     const recentQuestionEl = document.getElementById('recentQuestion');
     const historyBtn = document.getElementById('historyBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
     const exportBtn = document.getElementById('exportBtn'); // Assuming export button is also in popup.html
     const screenshotDisplay = document.getElementById('screenshot-display');
 
     // Open the history page when the history button is clicked
     historyBtn.addEventListener('click', () => {
         chrome.tabs.create({ url: 'history/history.html' });
-    });
-
-    // Open the options page when the settings button is clicked
-    settingsBtn.addEventListener('click', () => {
-        chrome.runtime.openOptionsPage();
     });
 
     // Load the current state from storage
@@ -52,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const newState = !data.extensionActive;
             chrome.storage.local.set({ extensionActive: newState }, () => {
                 updateUI(newState);
-                chrome.runtime.sendMessage({ action: 'updateIcon', state: newState ? 'active' : 'inactive' });
             });
         });
     });
