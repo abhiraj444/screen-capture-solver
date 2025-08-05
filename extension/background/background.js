@@ -107,7 +107,16 @@ chrome.commands.onCommand.addListener((command) => {
 
                         // Store the analysis in the history and update counters
                         chrome.storage.local.get({ history: [], totalCount: 0, todayCount: 0, lastDate: null }, (data) => {
-                            const newHistory = [analysis, ...data.history]; // Only store the analysis object
+                            // Add timestamp and enhanced metadata to analysis
+                            const enhancedAnalysis = {
+                                ...analysis,
+                                timestamp: new Date().toISOString(),
+                                date: new Date().toDateString(),
+                                time: new Date().toLocaleTimeString(),
+                                screenshotUrl: screenshotUrl
+                            };
+                            
+                            const newHistory = [enhancedAnalysis, ...data.history]; // Store enhanced analysis
                             const questionsCount = analysis.questions_found || analysis.questions?.length || 0;
                             const today = new Date().toDateString();
                             

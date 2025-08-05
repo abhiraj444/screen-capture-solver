@@ -3,28 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History - AI Question Solver</title>
+    <title>Question History - AI Question Solver</title>
     <link rel="stylesheet" href="history.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>Question History</h1>
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-history"></i> Question History</h1>
+                <p class="subtitle">Your AI-powered learning journey</p>
+            </div>
+        </header>
+        
         <div class="controls">
-            <input type="text" id="search-input" placeholder="Search questions...">
-            <select id="subject-filter">
-                <option value="all">All Subjects</option>
-                <option value="math">Math</option>
-                <option value="geography">Geography</option>
-                <!-- Add more subjects as needed -->
-            </select>
-            <select id="difficulty-filter">
-                <option value="all">All Difficulties</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-            </select>
-            <button id="export-btn">Export to Markdown</button>
+            <div class="search-group">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search questions, answers, explanations...">
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label><i class="fas fa-book"></i> Subject</label>
+                    <select id="subject-filter">
+                        <option value="all">All Subjects</option>
+                        <!-- Dynamic subjects will be added here -->
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label><i class="fas fa-chart-line"></i> Difficulty</label>
+                    <select id="difficulty-filter">
+                        <option value="all">All Difficulties</option>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar"></i> Date</label>
+                    <select id="date-filter">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button id="export-btn" class="btn-primary">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button id="clear-btn" class="btn-secondary">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
         </div>
+        
+        <div class="stats-bar">
+            <div class="stat">
+                <span class="stat-number" id="total-questions">0</span>
+                <span class="stat-label">Total Questions</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" id="filtered-count">0</span>
+                <span class="stat-label">Showing</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" id="unique-subjects">0</span>
+                <span class="stat-label">Subjects</span>
+            </div>
+        </div>
+        
         <div id="history-container"></div>
     </div>
     <script src="history.js"></script>
