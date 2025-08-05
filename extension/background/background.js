@@ -17,6 +17,12 @@ chrome.commands.onCommand.addListener((command) => {
                     const analysis = await analyzeScreenshot(screenshotUrl);
                     console.log('Analysis complete:', analysis);
                     chrome.storage.local.set({ lastAnalysis: analysis });
+
+                    // Store the analysis in the history
+                    chrome.storage.local.get({ history: [] }, (data) => {
+                        const newHistory = [analysis, ...data.history];
+                        chrome.storage.local.set({ history: newHistory });
+                    });
                 });
             }
         });

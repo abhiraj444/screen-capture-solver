@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('toggleBtn');
     const statusEl = document.getElementById('status');
     const recentQuestionEl = document.getElementById('recentQuestion');
+    const historyBtn = document.getElementById('historyBtn');
+
+    // Open the history page when the history button is clicked
+    historyBtn.addEventListener('click', () => {
+        chrome.tabs.create({ url: 'history/history.html' });
+    });
 
     // Load the current state from storage
     chrome.storage.local.get(['extensionActive', 'lastAnalysis'], (data) => {
