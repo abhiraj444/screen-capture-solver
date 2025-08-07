@@ -28,6 +28,13 @@
         "mac": "Command+Shift+X"
       },
       "description": "Capture and analyze selected text on the current tab."
+    },
+    "capture-partial": {
+      "suggested_key": {
+        "default": "Alt+C",
+        "mac": "Command+Shift+C"
+      },
+      "description": "Capture a partial screenshot."
     }
   },
   "background": {

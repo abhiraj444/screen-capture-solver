@@ -70,10 +70,53 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
 });
 
-// Listen for messages from popup.js to update icon
+// Listen for messages from popup.js and content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'updateIcon') {
         updateIcon(request.state);
+    } else if (request.action === 'capturePartialScreenshot') {
+        chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+            if (chrome.runtime.lastError || !dataUrl) {
+                console.error('Failed to capture tab:', chrome.runtime.lastError);
+                return;
+            }
+
+            createImageBitmap(dataUrl)
+                .then(imageBitmap => {
+                    const dpr = request.rect.devicePixelRatio || 1;
+                    const canvas = new OffscreenCanvas(request.rect.width * dpr, request.rect.height * dpr);
+                    const ctx = canvas.getContext('2d');
+
+                    ctx.drawImage(
+                        imageBitmap,
+                        request.rect.x * dpr,
+                        request.rect.y * dpr,
+                        request.rect.width * dpr,
+                        request.rect.height * dpr,
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+                    return canvas.convertToBlob({ type: 'image/png' });
+                })
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const croppedDataUrl = reader.result;
+                        // Now analyze the cropped image
+                        updateIcon('loading');
+                        analyzeScreenshot(croppedDataUrl)
+                            .then(analysis => handleAnalysisResponse(analysis, croppedDataUrl))
+                            .catch(error => {
+                                console.error('Error during analysis of partial screenshot:', error);
+                                updateIcon('inactive');
+                            });
+                    };
+                    reader.readAsDataURL(blob);
+                });
+        });
     }
 });
 
@@ -84,8 +127,25 @@ chrome.commands.onCommand.addListener((command) => {
         handleScreenshotCapture();
     } else if (command === 'capture-selected-text') {
         handleSelectedTextCapture();
+    } else if (command === 'capture-partial') {
+        handlePartialScreenshot();
     }
 });
+
+function handlePartialScreenshot() {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+            chrome.scripting.executeScript({
+                target: { tabId: tabs[0].id },
+                files: ['content/capture.js']
+            });
+            chrome.scripting.insertCSS({
+                target: { tabId: tabs[0].id },
+                files: ['content/capture.css']
+            });
+        }
+    });
+}
 
 // Note: Removed onClicked listener to allow normal popup behavior
 // The extension will use the default popup defined in manifest.json
