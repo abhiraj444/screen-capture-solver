@@ -48,50 +48,21 @@
 
     overlay.addEventListener('mouseup', (e) => {
         isSelecting = false;
+        const rect = selection.getBoundingClientRect();
 
-        const actions = document.createElement('div');
-        actions.id = 'screenshot-actions';
+        // Remove the overlay
+        document.body.removeChild(overlay);
 
-        const captureBtn = document.createElement('button');
-        captureBtn.className = 'screenshot-button';
-        captureBtn.textContent = 'Capture Selection';
-
-        const scrollBtn = document.createElement('button');
-        scrollBtn.className = 'screenshot-button';
-        scrollBtn.textContent = 'Capture with Scroll';
-
-        actions.appendChild(captureBtn);
-        actions.appendChild(scrollBtn);
-        selection.appendChild(actions);
-
-        captureBtn.addEventListener('click', () => {
-            const rect = selection.getBoundingClientRect();
-            chrome.runtime.sendMessage({
-                action: 'capturePartialScreenshot',
-                rect: {
-                    x: rect.left,
-                    y: rect.top,
-                    width: rect.width,
-                    height: rect.height,
-                    devicePixelRatio: window.devicePixelRatio
-                }
-            });
-            document.body.removeChild(overlay);
-        });
-
-        scrollBtn.addEventListener('click', () => {
-            const rect = selection.getBoundingClientRect();
-            chrome.runtime.sendMessage({
-                action: 'captureScrollingScreenshot',
-                rect: {
-                    x: rect.left,
-                    y: rect.top,
-                    width: rect.width,
-                    height: rect.height,
-                    devicePixelRatio: window.devicePixelRatio
-                }
-            });
-            document.body.removeChild(overlay);
+        // Send message to background script with the coordinates
+        chrome.runtime.sendMessage({
+            action: 'capturePartialScreenshot',
+            rect: {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height,
+                devicePixelRatio: window.devicePixelRatio
+            }
         });
     });
 
