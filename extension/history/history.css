@@ -338,6 +338,72 @@ body {
     color: #536471;
 }
 
+.history-thumbnail {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    cursor: pointer;
+    margin: -24px -24px 24px -24px; /* Extend to card edges */
+    border-bottom: 1px solid #eff3f4;
+}
+
+/* Image Modal Styles */
+#image-modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-hidden {
+    display: none !important;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.modal-image {
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 8px;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-new-tab-btn {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #4f46e5;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.modal-new-tab-btn:hover {
+    background-color: #4338ca;
+}
+
+
 @media (max-width: 768px) {
     .container {
         padding: 15px;

@@ -27,6 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load the history from storage
     loadHistoryData();
 
+    const imageModal = document.getElementById('image-modal');
+    const modalImage = document.querySelector('.modal-image');
+    const modalCloseBtn = document.querySelector('.modal-close-btn');
+    const modalNewTabBtn = document.querySelector('.modal-new-tab-btn');
+
     // Add event listeners for the controls
     searchInput.addEventListener('input', applyFilters);
     subjectFilter.addEventListener('change', applyFilters);
@@ -34,6 +39,29 @@ document.addEventListener('DOMContentLoaded', () => {
     dateFilter.addEventListener('change', applyFilters);
     exportBtn.addEventListener('click', () => exportToMarkdown(filteredHistory));
     clearBtn.addEventListener('click', clearAllHistory);
+
+    // Modal event listeners
+    historyContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('history-thumbnail')) {
+            const analysisIndex = e.target.dataset.analysisIndex;
+            const analysis = filteredHistory[analysisIndex];
+            if (analysis && analysis.screenshotUrl) {
+                modalImage.src = analysis.screenshotUrl;
+                modalNewTabBtn.href = analysis.screenshotUrl;
+                imageModal.classList.remove('modal-hidden');
+            }
+        }
+    });
+
+    modalCloseBtn.addEventListener('click', () => {
+        imageModal.classList.add('modal-hidden');
+    });
+
+    imageModal.addEventListener('click', (e) => {
+        if (e.target === imageModal) {
+            imageModal.classList.add('modal-hidden');
+        }
+    });
 
     // Add Export to PDF button to controls bar
     const actionsBar = document.querySelector('.actions');
@@ -320,6 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         historyContainer.innerHTML = history.map((analysis, analysisIndex) => {
             const timestamp = formatTimestamp(analysis.timestamp);
+            const thumbnailHtml = analysis.thumbnailUrl
+                ? `<img src="${analysis.thumbnailUrl}" alt="Screenshot thumbnail" class="history-thumbnail" data-analysis-index="${analysisIndex}">`
+                : '';
+
             let questionsHtml = '';
             
             analysis.questions.forEach((question, questionIndex) => {
@@ -348,7 +380,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             return `
                 <div class="history-analysis-card">
-                    ${questionsHtml}
+                    ${thumbnailHtml}
+                    <div class="history-card-content">
+                        ${questionsHtml}
+                    </div>
                 </div>
             `;
         }).join('');

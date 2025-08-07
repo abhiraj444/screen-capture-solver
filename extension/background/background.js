@@ -277,13 +277,38 @@ function handleSelectedTextCapture() {
  */
 async function handleAnalysisResponse(analysis, screenshotUrl = null) {
     console.log('Analysis complete:', analysis);
+
+    let thumbnailUrl = null;
+    if (screenshotUrl) {
+        try {
+            const blob = await fetch(screenshotUrl).then(res => res.blob());
+            const imageBitmap = await createImageBitmap(blob);
+
+            const thumbnailWidth = 200;
+            const thumbnailHeight = (imageBitmap.height / imageBitmap.width) * thumbnailWidth;
+
+            const canvas = new OffscreenCanvas(thumbnailWidth, thumbnailHeight);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imageBitmap, 0, 0, thumbnailWidth, thumbnailHeight);
+
+            const thumbnailBlob = await canvas.convertToBlob({ type: 'image/jpeg', quality: 0.7 });
+            thumbnailUrl = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(thumbnailBlob);
+            });
+        } catch (error) {
+            console.error('Failed to generate thumbnail:', error);
+        }
+    }
     
     const enhancedAnalysis = {
         ...analysis,
         timestamp: new Date().toISOString(),
         date: new Date().toDateString(),
         time: new Date().toLocaleTimeString(),
-        screenshotUrl: screenshotUrl
+        screenshotUrl: screenshotUrl,
+        thumbnailUrl: thumbnailUrl
     };
     
     // Save to local storage first for immediate availability
@@ -339,7 +364,7 @@ async function handleAnalysisResponse(analysis, screenshotUrl = null) {
             }).then(() => {
                 chrome.scripting.executeScript({
                     target: { tabId: tabs[0].id },
-                    files: ['content/results-overlay.js']
+                    files: ['utils/markdown.js', 'content/results-overlay.js']
                 }).then(() => {
                     chrome.tabs.sendMessage(tabs[0].id, {
                         action: 'displayResultsOverlay',
