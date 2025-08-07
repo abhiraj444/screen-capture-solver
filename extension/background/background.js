@@ -18,55 +18,36 @@ async function updateIcon(state) {
             case 'active':
             case 'success':
                 iconPath = {
-                    "16": "/assets/icons/icon_green.png",
-                    "48": "/assets/icons/icon_green.png",
-                    "128": "/assets/icons/icon_green.png"
+                    "16": "assets/icons/icon_green.png",
+                    "48": "assets/icons/icon_green.png",
+                    "128": "assets/icons/icon_green.png"
                 };
                 break;
             case 'inactive':
                 iconPath = {
-                    "16": "/assets/icons/icon_red.png",
-                    "48": "/assets/icons/icon_red.png",
-                    "128": "/assets/icons/icon_red.png"
+                    "16": "assets/icons/icon_red.png",
+                    "48": "assets/icons/icon_red.png",
+                    "128": "assets/icons/icon_red.png"
                 };
                 break;
             case 'loading':
                 iconPath = {
-                    "16": "/assets/icons/icon_loading.png",
-                    "48": "/assets/icons/icon_loading.png",
-                    "128": "/assets/icons/icon_loading.png"
+                    "16": "assets/icons/icon_loading.png",
+                    "48": "assets/icons/icon_loading.png",
+                    "128": "assets/icons/icon_loading.png"
                 };
                 break;
             default:
                 iconPath = {
-                    "16": "/assets/icons/icon_red.png",
-                    "48": "/assets/icons/icon_red.png",
-                    "128": "/assets/icons/icon_red.png"
+                    "16": "assets/icons/icon_red.png",
+                    "48": "assets/icons/icon_red.png",
+                    "128": "assets/icons/icon_red.png"
                 }; // Fallback
         }
         await chrome.action.setIcon({ path: iconPath });
         console.log(`Icon updated to: ${state}`);
     } catch (error) {
         console.error('Failed to update icon:', error);
-        // Fallback: try without leading slash
-        try {
-            let fallbackPath;
-            switch (state) {
-                case 'active':
-                case 'success':
-                    fallbackPath = "assets/icons/icon_green.png";
-                    break;
-                case 'loading':
-                    fallbackPath = "assets/icons/icon_loading.png";
-                    break;
-                default:
-                    fallbackPath = "assets/icons/icon_red.png";
-            }
-            await chrome.action.setIcon({ path: fallbackPath });
-            console.log(`Fallback icon updated to: ${state}`);
-        } catch (fallbackError) {
-            console.error('Fallback icon update also failed:', fallbackError);
-        }
     }
 }
 
