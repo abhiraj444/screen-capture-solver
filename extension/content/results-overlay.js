@@ -36,10 +36,10 @@
                     const answerStrong = document.createElement('strong');
                     answerStrong.textContent = `A${index + 1}:`;
 
-                    const answerText = document.createTextNode(q.direct_answer);
+                    const answerHTML = parseSimpleMarkdown(q.direct_answer);
 
                     answerDiv.appendChild(answerStrong);
-                    answerDiv.appendChild(answerText);
+                    answerDiv.innerHTML += answerHTML; // Append the parsed HTML
                     content.appendChild(answerDiv);
                 });
             } else {
