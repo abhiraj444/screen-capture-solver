@@ -327,12 +327,26 @@ async function handleAnalysisResponse(analysis, screenshotUrl = null) {
         type: 'basic',
         iconUrl: 'assets/icons/icon_green.png',
         title: 'Question Analysis Complete!',
-        message: `Found ${analysis.questions_found || analysis.questions?.length || 0} question(s). Click the extension icon to view results.`
+        message: `Found ${analysis.questions_found || analysis.questions?.length || 0} question(s). Answers are displayed on the page.`
     });
     
-    try {
-        chrome.action.openPopup();
-    } catch (popupError) {
-        console.log('Could not auto-open popup (this is normal):', popupError.message);
-    }
+    // Send results to the content script to be displayed in an overlay
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+            chrome.scripting.insertCSS({
+                target: { tabId: tabs[0].id },
+                files: ['content/results-overlay.css']
+            }).then(() => {
+                chrome.scripting.executeScript({
+                    target: { tabId: tabs[0].id },
+                    files: ['content/results-overlay.js']
+                }).then(() => {
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                        action: 'displayResultsOverlay',
+                        analysis: enhancedAnalysis
+                    });
+                });
+            });
+        }
+    });
 }
