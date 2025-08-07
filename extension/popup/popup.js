@@ -5,8 +5,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('toggleBtn');
     const statusEl = document.getElementById('status');
+    const statusBar = document.querySelector('.status-bar');
     const recentQuestionEl = document.getElementById('recentQuestion');
     const historyBtn = document.getElementById('historyBtn');
     const screenshotDisplay = document.getElementById('screenshot-display');
@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Toggle the extension's state when the button is clicked
-    toggleBtn.addEventListener('click', () => {
+    // Toggle the extension's state
+    function toggleExtensionState() {
         chrome.storage.local.get('extensionActive', (data) => {
             const newState = !data.extensionActive;
             chrome.storage.local.set({ extensionActive: newState }, () => {
@@ -63,7 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 chrome.runtime.sendMessage({ action: 'updateIcon', state: newState ? 'active' : 'inactive' });
             });
         });
-    });
+    }
+
+    // Add click listener to the entire status bar
+    statusBar.addEventListener('click', toggleExtensionState);
 
     // Model toggle change event
     modelToggle.addEventListener('change', () => {
@@ -75,16 +78,21 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {boolean} active - Whether the extension is active.
      */
     function updateUI(active) {
+        const toggleBtn = document.getElementById('toggleBtn');
         if (active) {
             statusEl.textContent = 'ACTIVE';
             statusEl.classList.add('active');
-            toggleBtn.textContent = 'STOP';
-            toggleBtn.classList.add('active');
+            if (toggleBtn) {
+                toggleBtn.textContent = 'STOP';
+                toggleBtn.classList.add('active');
+            }
         } else {
             statusEl.textContent = 'INACTIVE';
             statusEl.classList.remove('active');
-            toggleBtn.textContent = 'START';
-            toggleBtn.classList.remove('active');
+            if (toggleBtn) {
+                toggleBtn.textContent = 'START';
+                toggleBtn.classList.remove('active');
+            }
         }
     }
 
