@@ -70,6 +70,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
 });
 
+let imageStrips = [];
+
 // Listen for messages from popup.js and content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'updateIcon') {
@@ -84,26 +86,47 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             files: ['content/capture.css']
         });
     } else if (request.action === 'startFullPageCapture') {
+        imageStrips = []; // Reset for a new capture
         chrome.scripting.executeScript({
             target: { tabId: sender.tab.id },
             files: ['content/scroll-capture.js']
         });
-    } else if (request.action === 'captureFullPage') {
-        // This is where the full page capture logic will go.
-        // For now, just capture the visible tab as a placeholder.
+    } else if (request.action === 'takeStripCapture') {
         chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-            if (chrome.runtime.lastError || !dataUrl) {
-                console.error('Failed to capture tab:', chrome.runtime.lastError);
-                return;
+            if (dataUrl) {
+                imageStrips.push(dataUrl);
+                chrome.tabs.sendMessage(sender.tab.id, { action: 'stripCaptureComplete' });
             }
-            updateIcon('loading');
-            analyzeScreenshot(dataUrl)
-                .then(analysis => handleAnalysisResponse(analysis, dataUrl))
-                .catch(error => {
-                    console.error('Error during analysis of full page screenshot:', error);
-                    updateIcon('inactive');
-                });
         });
+    } else if (request.action === 'stitchImages') {
+        Promise.all(imageStrips.map(dataUrl => fetch(dataUrl).then(res => res.blob()).then(blob => createImageBitmap(blob))))
+            .then(bitmaps => {
+                const totalHeight = bitmaps.reduce((acc, bitmap) => acc + bitmap.height, 0);
+                const canvas = new OffscreenCanvas(bitmaps[0].width, totalHeight);
+                const ctx = canvas.getContext('2d');
+
+                let currentHeight = 0;
+                bitmaps.forEach(bitmap => {
+                    ctx.drawImage(bitmap, 0, currentHeight);
+                    currentHeight += bitmap.height;
+                });
+
+                return canvas.convertToBlob({ type: 'image/png' });
+            })
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const stitchedDataUrl = reader.result;
+                    updateIcon('loading');
+                    analyzeScreenshot(stitchedDataUrl)
+                        .then(analysis => handleAnalysisResponse(analysis, stitchedDataUrl))
+                        .catch(error => {
+                            console.error('Error during analysis of stitched screenshot:', error);
+                            updateIcon('inactive');
+                        });
+                };
+                reader.readAsDataURL(blob);
+            });
     } else if (request.action === 'capturePartialScreenshot') {
         chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
             if (chrome.runtime.lastError || !dataUrl) {

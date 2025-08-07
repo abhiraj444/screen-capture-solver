@@ -21,17 +21,58 @@
     document.body.appendChild(stopButton);
 
     let stopped = false;
+
+    const fixedElements = [];
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(el => {
+        const style = window.getComputedStyle(el);
+        if (style.position === 'fixed') {
+            fixedElements.push({ el, originalPosition: style.position });
+            el.style.position = 'absolute';
+        }
+    });
+
+    const restoreFixedElements = () => {
+        fixedElements.forEach(({ el, originalPosition }) => {
+            el.style.position = originalPosition;
+        });
+    };
+
     stopButton.addEventListener('click', () => {
         stopped = true;
+        restoreFixedElements();
         document.body.removeChild(stopButton);
     });
 
-    // Logic for scrolling and capturing will go here.
-    // This is a placeholder for now.
-    console.log('Scroll capture script injected.');
+    const pageHeight = document.body.scrollHeight;
+    const windowHeight = window.innerHeight;
+    let scrollTop = 0;
 
-    // For now, just send a message to the background to do a simple capture.
-    // This will be replaced with the full scrolling logic.
-    chrome.runtime.sendMessage({ action: 'captureFullPage' });
-    document.body.removeChild(stopButton); // Remove button after sending message
+    const captureLoop = async () => {
+        if (stopped) return;
+
+        window.scrollTo(0, scrollTop);
+
+        // Give the page a moment to render after scrolling
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        chrome.runtime.sendMessage({ action: 'takeStripCapture' });
+    };
+
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action === 'stripCaptureComplete') {
+            scrollTop += windowHeight;
+            if (scrollTop < pageHeight) {
+                captureLoop();
+            } else {
+                // All strips captured
+                restoreFixedElements();
+                document.body.removeChild(stopButton);
+                chrome.runtime.sendMessage({ action: 'stitchImages' });
+            }
+        }
+    });
+
+    // Start the loop
+    captureLoop();
 })();
