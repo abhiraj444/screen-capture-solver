@@ -81,7 +81,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 return;
             }
 
-            createImageBitmap(dataUrl)
+            fetch(dataUrl)
+                .then(res => res.blob())
+                .then(blob => createImageBitmap(blob))
                 .then(imageBitmap => {
                     const dpr = request.rect.devicePixelRatio || 1;
                     const canvas = new OffscreenCanvas(request.rect.width * dpr, request.rect.height * dpr);
@@ -115,6 +117,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             });
                     };
                     reader.readAsDataURL(blob);
+                });
+        });
+    } else if (request.action === 'captureScrollingScreenshot') {
+        // This is a placeholder for the scrolling logic.
+        // It's a complex feature that will be implemented in a future step.
+        console.log('Scrolling screenshot requested with rect:', request.rect);
+        // For now, just capture the visible part.
+        chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+            if (chrome.runtime.lastError || !dataUrl) {
+                console.error('Failed to capture tab:', chrome.runtime.lastError);
+                return;
+            }
+            updateIcon('loading');
+            analyzeScreenshot(dataUrl)
+                .then(analysis => handleAnalysisResponse(analysis, dataUrl))
+                .catch(error => {
+                    console.error('Error during analysis of scrolling screenshot:', error);
+                    updateIcon('inactive');
                 });
         });
     }
