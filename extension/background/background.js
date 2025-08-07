@@ -74,6 +74,36 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'updateIcon') {
         updateIcon(request.state);
+    } else if (request.action === 'startPartialCapture') {
+        chrome.scripting.executeScript({
+            target: { tabId: sender.tab.id },
+            files: ['content/capture.js']
+        });
+        chrome.scripting.insertCSS({
+            target: { tabId: sender.tab.id },
+            files: ['content/capture.css']
+        });
+    } else if (request.action === 'startFullPageCapture') {
+        chrome.scripting.executeScript({
+            target: { tabId: sender.tab.id },
+            files: ['content/scroll-capture.js']
+        });
+    } else if (request.action === 'captureFullPage') {
+        // This is where the full page capture logic will go.
+        // For now, just capture the visible tab as a placeholder.
+        chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+            if (chrome.runtime.lastError || !dataUrl) {
+                console.error('Failed to capture tab:', chrome.runtime.lastError);
+                return;
+            }
+            updateIcon('loading');
+            analyzeScreenshot(dataUrl)
+                .then(analysis => handleAnalysisResponse(analysis, dataUrl))
+                .catch(error => {
+                    console.error('Error during analysis of full page screenshot:', error);
+                    updateIcon('inactive');
+                });
+        });
     } else if (request.action === 'capturePartialScreenshot') {
         chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
             if (chrome.runtime.lastError || !dataUrl) {
@@ -119,24 +149,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     reader.readAsDataURL(blob);
                 });
         });
-    } else if (request.action === 'captureScrollingScreenshot') {
-        // This is a placeholder for the scrolling logic.
-        // It's a complex feature that will be implemented in a future step.
-        console.log('Scrolling screenshot requested with rect:', request.rect);
-        // For now, just capture the visible part.
-        chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-            if (chrome.runtime.lastError || !dataUrl) {
-                console.error('Failed to capture tab:', chrome.runtime.lastError);
-                return;
-            }
-            updateIcon('loading');
-            analyzeScreenshot(dataUrl)
-                .then(analysis => handleAnalysisResponse(analysis, dataUrl))
-                .catch(error => {
-                    console.error('Error during analysis of scrolling screenshot:', error);
-                    updateIcon('inactive');
-                });
-        });
     }
 });
 
@@ -157,11 +169,11 @@ function handlePartialScreenshot() {
         if (tabs[0]) {
             chrome.scripting.executeScript({
                 target: { tabId: tabs[0].id },
-                files: ['content/capture.js']
+                files: ['content/mode-selector.js']
             });
             chrome.scripting.insertCSS({
                 target: { tabId: tabs[0].id },
-                files: ['content/capture.css']
+                files: ['content/mode-selector.css']
             });
         }
     });

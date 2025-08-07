@@ -27,27 +27,3 @@
     border-radius: 4px;
     white-space: nowrap;
 }
-
-#screenshot-actions {
-    position: absolute;
-    bottom: -40px;
-    right: 0;
-    display: flex;
-    gap: 8px;
-}
-
-.screenshot-button {
-    background-color: #4f46e5;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.screenshot-button:hover {
-    background-color: #4338ca;
-}
