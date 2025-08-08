@@ -8,7 +8,7 @@
     stopButton.textContent = 'Stop Capturing';
     Object.assign(stopButton.style, {
         position: 'fixed',
-        top: '20px',
+        bottom: '20px',
         right: '20px',
         zIndex: '99999999',
         padding: '10px 16px',

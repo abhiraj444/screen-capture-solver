@@ -95,7 +95,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
             if (dataUrl) {
                 imageStrips.push(dataUrl);
-                chrome.tabs.sendMessage(sender.tab.id, { action: 'stripCaptureComplete' });
+                // Add a delay to avoid hitting the capture quota
+                setTimeout(() => {
+                    chrome.tabs.sendMessage(sender.tab.id, { action: 'stripCaptureComplete' });
+                }, 500);
             }
         });
     } else if (request.action === 'stitchImages') {
@@ -111,7 +114,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     currentHeight += bitmap.height;
                 });
 
-                return canvas.convertToBlob({ type: 'image/png' });
+                return canvas.convertToBlob({ type: 'image/jpeg', quality: 0.8 });
             })
             .then(blob => {
                 const reader = new FileReader();
@@ -154,7 +157,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         canvas.height
                     );
 
-                    return canvas.convertToBlob({ type: 'image/png' });
+                    return canvas.convertToBlob({ type: 'image/jpeg', quality: 0.8 });
                 })
                 .then(blob => {
                     const reader = new FileReader();
