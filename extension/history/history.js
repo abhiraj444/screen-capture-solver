@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const analysis = filteredHistory[analysisIndex];
             if (analysis && analysis.screenshotUrl) {
                 modalImage.src = analysis.screenshotUrl;
-                modalNewTabBtn.href = analysis.screenshotUrl;
+                // We'll handle the new tab button via its own click listener
                 imageModal.classList.remove('modal-hidden');
             }
         }
@@ -60,6 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
     imageModal.addEventListener('click', (e) => {
         if (e.target === imageModal) {
             imageModal.classList.add('modal-hidden');
+        }
+    });
+
+    modalNewTabBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const imageUrl = modalImage.src;
+        if (imageUrl) {
+            fetch(imageUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, '_blank');
+                    // We don't revoke the URL because the new tab needs it.
+                });
         }
     });
 
